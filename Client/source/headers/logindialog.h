@@ -24,6 +24,10 @@ public:
 
 private:
     Ui::LoginDialog *ui;
+
+signals:
+
+    void switchRegister();          // 切换到注册界面
 };
 
 
