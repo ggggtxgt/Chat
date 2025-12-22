@@ -16,14 +16,20 @@ find_package(Qt5 COMPONENTS
 
 # 应用图标
 set(ICO "${CMAKE_CURRENT_SOURCE_DIR}/../../../study/Chat/Client/res/qrc/ico.rc")
+# 资源文件
+set(QRC "${CMAKE_CURRENT_SOURCE_DIR}/../../../study/Chat/Client/res/qrc/rc.qrc")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/headers)
 
 add_executable(${PROJECT_NAME}
         ${ICO}
+        ${QRC}
         source/cpp/main.cpp
         source/cpp/mainwindow.cpp
         source/headers/mainwindow.h
+        source/cpp/logindialog.cpp
+        source/headers/logindialog.h
+        source/forms/logindialog.ui
 )
 
 target_link_libraries(${PROJECT_NAME}
