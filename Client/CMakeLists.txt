@@ -14,9 +14,15 @@ find_package(Qt5 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(Client source/cpp/main.cpp)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/headers)
 
-target_link_libraries(Client
+add_executable(${PROJECT_NAME}
+        source/cpp/main.cpp
+        source/cpp/mainwindow.cpp
+        source/headers/mainwindow.h
+        )
+
+target_link_libraries(${PROJECT_NAME}
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
