@@ -40,6 +40,10 @@ private:
 private:
     QNetworkAccessManager _manager;
 
+private slots:
+
+    void slot_http_finish(RequestId id, QString res, ErrorCodes err, Moudles moudle);
+
 signals:
 
     /******************************************************************************
@@ -51,6 +55,8 @@ signals:
      * @param     发送 HTTP 请求的模块
     *****************************************************************************/
     void signal_http_finish(RequestId id, QString res, ErrorCodes err, Moudles moudle);
+
+    void signal_register_finish(RequestId id, QString res, ErrorCodes err);
 };
 
 

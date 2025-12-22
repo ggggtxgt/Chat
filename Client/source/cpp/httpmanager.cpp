@@ -2,7 +2,9 @@
 
 HttpManager::~HttpManager() {}
 
-HttpManager::HttpManager() {}
+HttpManager::HttpManager() {
+    connect(this, &HttpManager::signal_http_finish, this, &HttpManager::slot_http_finish);
+}
 
 void HttpManager::PostHttpRequest(QUrl url, QJsonObject json, RequestId id, Moudles moudle) {
     // 将 QJsonObject 转换为 json 数据
@@ -33,4 +35,11 @@ void HttpManager::PostHttpRequest(QUrl url, QJsonObject json, RequestId id, Moud
         reply->deleteLater();
         return;
     });
+}
+
+void HttpManager::slot_http_finish(RequestId id, QString res, ErrorCodes err, Moudles moudle) {
+    if (Moudles::REGISTERMOD == moudle) {
+        // 发送信号通知指定模块，http 响应已经结束
+        emit signal_register_finish(id, res, err);
+    }
 }
