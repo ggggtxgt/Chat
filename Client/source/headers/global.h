@@ -8,10 +8,14 @@
 #ifndef CLIENT_GLOBAL_H
 #define CLIENT_GLOBAL_H
 
+#include <QDebug>
 #include <QStyle>
 #include <QWidget>
 #include <QRegularExpression>
 
+#include <mutex>
+#include <memory>
+#include <iostream>
 #include <functional>
 
 // 刷新qss，从而更新错误提示
