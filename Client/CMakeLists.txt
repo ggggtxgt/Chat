@@ -14,13 +14,17 @@ find_package(Qt5 COMPONENTS
         Widgets
         REQUIRED)
 
+# 应用图标
+set(ICO "${CMAKE_CURRENT_SOURCE_DIR}/../../../study/Chat/Client/res/qrc/ico.rc")
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/headers)
 
 add_executable(${PROJECT_NAME}
+        ${ICO}
         source/cpp/main.cpp
         source/cpp/mainwindow.cpp
         source/headers/mainwindow.h
-        )
+)
 
 target_link_libraries(${PROJECT_NAME}
         Qt5::Core
