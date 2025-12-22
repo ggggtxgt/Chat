@@ -1,0 +1,9 @@
+/* 设置对话框背景为纯白色 */
+QDialog#LoginDialog,#RegisterDialog{
+    background-color:rgb(255,255,255)
+}
+
+/* 设置标签文字为纯黑色 */
+#user_label,#pass_label{
+    color:black;
+}
