@@ -11,6 +11,8 @@
 #include <QDebug>
 #include <QStyle>
 #include <QWidget>
+#include <QString>
+#include <QByteArray>
 #include <QRegularExpression>
 
 #include <mutex>
@@ -20,5 +22,23 @@
 
 // 刷新qss，从而更新错误提示
 extern std::function<void(QWidget *)> repolish;
+
+// HTTP 请求的不同目的
+enum RequestId {
+    ID_GET_VARIFY_CODE = 1001,              // 获取验证码
+    ID_REGISTER_USER = 1002,                // 注册用户
+};
+
+// 发送 HTTP 请求的模块
+enum Moudles {
+    REGISTERMOD = 0,                        // 注册
+};
+
+// HTTP 请求发送失败的错误类型
+enum ErrorCodes {
+    SUCCESS = 0,                            // 成功
+    ERR_JSON = 1,                           // JSON 解析失败
+    ERR_NETWORK = 2,                        // 网络错误
+};
 
 #endif //CLIENT_GLOBAL_H
