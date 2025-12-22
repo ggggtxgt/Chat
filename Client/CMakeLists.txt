@@ -19,20 +19,17 @@ set(ICO "${CMAKE_CURRENT_SOURCE_DIR}/../../../study/Chat/Client/res/qrc/ico.rc")
 # 资源文件
 set(QRC "${CMAKE_CURRENT_SOURCE_DIR}/../../../study/Chat/Client/res/qrc/rc.qrc")
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/headers)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/source/headers)         # 包含头文件
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/source/cpp CPP_LIST)   # 搜索源文件
+file(GLOB FORM_LIST "${CMAKE_CURRENT_SOURCE_DIR}/source/forms/*.ui")    # 搜索 ui 文件
+file(GLOB HEADER_LIST "${CMAKE_CURRENT_SOURCE_DIR}/source/headers/*.h") # 搜索头文件
 
 add_executable(${PROJECT_NAME}
         ${ICO}
         ${QRC}
-        source/cpp/main.cpp
-        source/cpp/mainwindow.cpp
-        source/headers/mainwindow.h
-        source/cpp/logindialog.cpp
-        source/headers/logindialog.h
-        source/forms/logindialog.ui
-        source/cpp/registerdialog.cpp
-        source/headers/registerdialog.h
-        source/forms/registerdialog.ui
+        ${CPP_LIST}
+        ${FORM_LIST}
+        ${HEADER_LIST}
 )
 
 target_link_libraries(${PROJECT_NAME}
