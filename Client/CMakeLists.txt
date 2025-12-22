@@ -30,6 +30,9 @@ add_executable(${PROJECT_NAME}
         source/cpp/logindialog.cpp
         source/headers/logindialog.h
         source/forms/logindialog.ui
+        source/cpp/registerdialog.cpp
+        source/headers/registerdialog.h
+        source/forms/registerdialog.ui
 )
 
 target_link_libraries(${PROJECT_NAME}
