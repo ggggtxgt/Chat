@@ -7,3 +7,12 @@ QDialog#LoginDialog,#RegisterDialog{
 #user_label,#pass_label{
     color:black;
 }
+
+/* 为错误提示标签的不同状态，设置不同文字颜色 */
+#error_tip[state='normal']{
+    color: green;
+}
+
+#error_tip[state='error']{
+    color: red;
+}

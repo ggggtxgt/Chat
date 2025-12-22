@@ -27,12 +27,12 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    LoginDialog *_login_dialog;
-    RegisterDialog *_register_dialog;
+    LoginDialog *_login_dialog;         // 登录界面类对象
+    RegisterDialog *_register_dialog;   // 注册界面类对象
 
 private slots:
 
-    void SlotSwitchRegister();
+    void SlotSwitchRegister();          // 槽函数：[登录界面] ---> [注册界面]
 };
 
 #endif // MAINWINDOW_H

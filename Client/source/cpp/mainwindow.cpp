@@ -9,28 +9,21 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     // 创建登录、注册界面实例
-    _login_dialog = new LoginDialog();
+    _login_dialog = new LoginDialog(this);
     setCentralWidget(_login_dialog);
-    _login_dialog->show();
 
-    _register_dialog = new RegisterDialog();
+    _register_dialog = new RegisterDialog(this);
 
     // 建立 [界面切换: 登录 --> 注册] 的信号连接
     connect(_login_dialog, &LoginDialog::switchRegister, this, &MainWindow::SlotSwitchRegister);
+
+    // 设置窗口无边框（将窗口嵌入主界面）
+    _login_dialog->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    _register_dialog->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
 }
 
 MainWindow::~MainWindow() {
     delete ui;
-
-    // 释放登录、注册界面申请的资源，并且防止出现野指针
-    if (_login_dialog) {
-        delete _login_dialog;
-        _login_dialog = nullptr;
-    }
-    if (_register_dialog) {
-        delete _register_dialog;
-        _register_dialog = nullptr;
-    }
 }
 
 void MainWindow::SlotSwitchRegister() {

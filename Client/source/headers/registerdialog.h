@@ -25,6 +25,14 @@ public:
 
 private:
     Ui::RegisterDialog *ui;
+
+private:
+    void showTip(QString str, bool b_ok);
+
+private slots:
+
+    // [获取验证码] 按钮对应的槽函数
+    void on_get_code_clicked();
 };
 
 
