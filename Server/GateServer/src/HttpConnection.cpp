@@ -1,3 +1,4 @@
+#include "LogicSystem.h"
 #include "HttpConnection.h"
 
 HttpConnection::HttpConnection(tcp::socket socket) : _socket(std::move(socket)) {}
@@ -28,7 +29,7 @@ void HttpConnection::handlerRequest() {
 
     // 处理 http get 请求
     if (http::verb::get == _request.method()) {
-        bool success = LogicSystem::GetInstance()->HandlerGet(_request.target(), shared_from_this());
+        bool success = LogicSystem::GetInstance()->HandleGet(_request.target(), shared_from_this());
         // 处理错误情况
         if (!success) {
             _response.result(http::status::not_found);
