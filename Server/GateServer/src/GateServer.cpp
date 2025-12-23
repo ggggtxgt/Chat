@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
         });
         // 启动 Server 和 ioc
         std::make_shared<CServer>(ioc, port)->Start();
+        std::cout << "GateServer listen on port: " << port << std::endl;
         ioc.run();
     }
     catch (std::exception &exp) {
