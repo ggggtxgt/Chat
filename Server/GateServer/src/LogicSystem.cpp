@@ -1,6 +1,7 @@
 #include "Glog.h"
 #include "LogicSystem.h"
 #include "HttpConnection.h"
+#include "VerifyGrpcClient.h"
 
 #include <json/json.h>
 #include <json/value.h>
@@ -42,8 +43,9 @@ LogicSystem::LogicSystem() {
             return true;
         }
         auto email = src_root["email"].asString();
+        GetVarifyResponse response = VerifyGrpcClient::GetInstance()->GetVarifyCode(email);
         LOG(INFO) << "email is: " << email;
-        root["error"] = 0;
+        root["error"] = response.error();
         root["email"] = src_root["email"];
         std::string str = root.toStyledString();
         beast::ostream(connection->_response.body()) << str;
