@@ -23,26 +23,26 @@ Q_OBJECT
 
 public:
     ~HttpManager();                         // 析构函数
+
+    /******************************************************************************
+ * @func      PostHttpRequest
+ * @brief     发送 HTTP 请求
+ * @param     需要发送的路由地址
+ * @param     需要发送的 JSON 数据
+ * @param     HTTP 请求的不同目的
+ * @param     发送 HTTP 请求的模块
+*****************************************************************************/
+    void PostHttpRequest(QUrl url, QJsonObject json, RequestId id, Module module);
 private:
     friend class Singleton<HttpManager>;    // 指定友元
     HttpManager();                          // 构造函数
-
-    /******************************************************************************
-     * @func      PostHttpRequest
-     * @brief     发送 HTTP 请求
-     * @param     需要发送的路由地址
-     * @param     需要发送的 JSON 数据
-     * @param     HTTP 请求的不同目的
-     * @param     发送 HTTP 请求的模块
-    *****************************************************************************/
-    void PostHttpRequest(QUrl url, QJsonObject json, RequestId id, Moudles moudle);
 
 private:
     QNetworkAccessManager _manager;
 
 private slots:
 
-    void slot_http_finish(RequestId id, QString res, ErrorCodes err, Moudles moudle);
+    void slot_http_finish(RequestId id, QString res, ErrorCodes err, Module module);
 
 signals:
 
@@ -54,7 +54,7 @@ signals:
      * @param     HTTP 请求发送失败的错误类型
      * @param     发送 HTTP 请求的模块
     *****************************************************************************/
-    void signal_http_finish(RequestId id, QString res, ErrorCodes err, Moudles moudle);
+    void signal_http_finish(RequestId id, QString res, ErrorCodes err, Module module);
 
     void signal_register_finish(RequestId id, QString res, ErrorCodes err);
 };

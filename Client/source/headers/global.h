@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QStyle>
 #include <QWidget>
+#include <QObject>
 #include <QString>
 #include <QByteArray>
 #include <QRegularExpression>
@@ -30,7 +31,7 @@ enum RequestId {
 };
 
 // 发送 HTTP 请求的模块
-enum Moudles {
+enum Module {
     REGISTERMOD = 0,                        // 注册
 };
 
@@ -40,5 +41,8 @@ enum ErrorCodes {
     ERR_JSON = 1,                           // JSON 解析失败
     ERR_NETWORK = 2,                        // 网络错误
 };
+
+// 发送 post 请求的网络前缀
+extern QString url_prefix;
 
 #endif //CLIENT_GLOBAL_H
