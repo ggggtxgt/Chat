@@ -27,7 +27,7 @@ private:
     // 定时器
     net::steady_timer deadline_{_socket.get_executor(), std::chrono::seconds(60)};
 
-    std::string _get_url;                                       // 存储 get 请求的urlS
+    std::string _get_url;                                       // 存储 get 请求的url
     std::unordered_map<std::string, std::string> _get_params;   // 带有参数的 get 请求的映射表
 };
 

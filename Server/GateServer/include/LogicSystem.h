@@ -15,6 +15,8 @@ public:
 
     bool HandleGet(std::string, std::shared_ptr<HttpConnection>);   // 处理 get 请求
     void RegisterGet(std::string, HttpHandler);                     // 注册 get 请求
+    bool HandlePost(std::string, std::shared_ptr<HttpConnection>);  // 处理 post 请求
+    void RegisterPost(std::string, HttpHandler);                    // 注册 post 请求
 
 private:
     LogicSystem();

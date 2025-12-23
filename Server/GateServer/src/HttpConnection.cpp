@@ -46,6 +46,25 @@ void HttpConnection::handleRequest() {
         writeResponse();
         return;
     }
+
+    // 处理 http post 请求
+    if (http::verb::post == _request.method()) {
+        bool success = LogicSystem::GetInstance()->HandlePost(_request.target(), shared_from_this());
+        // 处理错误情况
+        if (!success) {
+            _response.result(http::status::not_found);
+            _response.set(http::field::content_type, "text/plain");
+            beast::ostream(_response.body()) << "url not found.\r\n";
+            writeResponse();
+            return;
+        }
+
+        // 处理正确情况
+        _response.result(http::status::ok);
+        _response.set(http::field::server, "GateServer");
+        writeResponse();
+        return;
+    }
 }
 
 void HttpConnection::writeResponse() {
