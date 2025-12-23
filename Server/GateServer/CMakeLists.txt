@@ -9,6 +9,7 @@ file(GLOB SRC_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 # boost 头文件
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../application/boost)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../application/boost/stage/lib)
 # glog
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../application/glog/lib)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../application/glog/include)
@@ -53,12 +54,20 @@ file(GLOB GRPC_CC "${CMAKE_CURRENT_SOURCE_DIR}/grpc/*.cc")
 # 生成目标文件
 add_executable(${PROJECT_NAME} ${SRC_LIST} ${GRPC_CC})
 
+# 复制 config.ini 到输出目录
+if (WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_SOURCE_DIR}/config.ini"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    )
+endif ()
+
 # jsoncpp 库文件
 target_link_libraries(${PROJECT_NAME} PRIVATE json_vc71_libmtd.lib)
 # glog 库文件
 target_link_libraries(${PROJECT_NAME} PRIVATE glogd.dll DbgHelp)
 # GRPC 库文件
-
 target_link_libraries(${PROJECT_NAME} PRIVATE
         libprotobufd.lib
         gpr.lib

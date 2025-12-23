@@ -2,13 +2,14 @@
 
 #include "Glog.h"
 #include "CServer.h"
+#include "ConfigManager.h"
 
 int main(int argc, char *argv[]) {
+    Glog::GetInstance()->InitLog(argv[0]);
+    ConfigManager fCfgMgr;
+    std::string port_str = fCfgMgr["GateServer"]["Port"];
+    unsigned short port = atoi(port_str.c_str());
     try {
-        Glog::GetInstance()->InitLog(argv[0]);
-
-        // 指定端口号
-        unsigned short port = static_cast<unsigned short>(8080);
         // 初始化上下文，底层一个线程运行
         net::io_context ioc{1};
         // 生成信号集
