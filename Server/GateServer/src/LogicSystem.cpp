@@ -1,3 +1,4 @@
+#include "Glog.h"
 #include "LogicSystem.h"
 #include "HttpConnection.h"
 
@@ -26,7 +27,7 @@ LogicSystem::LogicSystem() {
         Json::Value src_root;
         bool parse_success = reader.parse(body_str, src_root);
         if (!parse_success) {
-            std::cout << "Failed to parse Json data!" << std::endl;
+            LOG(ERROR) << "Failed to parse Json data!";
             root["error"] = ErrorCodes::Error_Json;
             std::string str = root.toStyledString();
             beast::ostream(connection->_response.body()) << str;
@@ -34,14 +35,14 @@ LogicSystem::LogicSystem() {
         }
         // key 值不存在
         if (!src_root.isMember("email")) {
-            std::cout << "Failed to parse Json data!" << std::endl;
+            LOG(ERROR) << "Failed to parse Json data!";
             root["error"] = ErrorCodes::Error_Json;
             std::string str = root.toStyledString();
             beast::ostream(connection->_response.body()) << str;
             return true;
         }
         auto email = src_root["email"].asString();
-        std::cout << "email is: " << email << std::endl;
+        LOG(INFO) << "email is: " << email;
         root["error"] = 0;
         root["email"] = src_root["email"];
         std::string str = root.toStyledString();

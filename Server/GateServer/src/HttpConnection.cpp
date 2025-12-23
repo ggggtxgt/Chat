@@ -1,3 +1,4 @@
+#include "Glog.h"
 #include "LogicSystem.h"
 #include "HttpConnection.h"
 
@@ -8,7 +9,7 @@ void HttpConnection::Start() {
     http::async_read(_socket, _buffer, _request, [self](beast::error_code error, std::size_t bytes_transferred) {
         try {
             if (error) {
-                std::cout << "http read error is: " << error.what() << std::endl;
+                LOG(ERROR) << "http read error is: " << error.what();
                 return;
             }
             boost::ignore_unused(bytes_transferred);
@@ -16,7 +17,7 @@ void HttpConnection::Start() {
             self->checkDeadline();
         }
         catch (std::exception &exp) {
-            std::cout << "exception is: " << exp.what() << std::endl;
+            LOG(ERROR) << "Exception is: " << exp.what();
         }
     });
 }

@@ -1,27 +1,12 @@
-/* Windows 平台使用，一定需要添加 */
-/* 特别注意：这两个宏必须位于 #include <glog/logging.h> 之上 */
-#define GLOG_NO_ABBREVIATED_SEVERITIES
-#define GLOG_USE_GLOG_EXPORT
-
 #include <iostream>
-#include <glog/logging.h>
 
+#include "Glog.h"
 #include "CServer.h"
 
 int main(int argc, char *argv[]) {
-    // 初始化glog（必须第一个调用）
-    google::InitGoogleLogging(argv[0]);
-    // 基本配置
-    FLAGS_logtostderr = 1;           // 日志同时输出到控制台
-    FLAGS_colorlogtostderr = true;   // 控制台彩色输出
-    FLAGS_stderrthreshold = 0;       // INFO 及以上级别都输出到控制台
-    FLAGS_logbufsecs = 0;            // 日志立即刷新
-    LOG(INFO) << "Glog初始化完成";
-    LOG(INFO) << "this is formation.";
-    LOG(INFO) << "程序即将退出";
-    google::ShutdownGoogleLogging();
-
     try {
+        Glog::GetInstance()->InitLog(argv[0]);
+
         // 指定端口号
         unsigned short port = static_cast<unsigned short>(8080);
         // 初始化上下文，底层一个线程运行
@@ -36,11 +21,11 @@ int main(int argc, char *argv[]) {
         });
         // 启动 Server 和 ioc
         std::make_shared<CServer>(ioc, port)->Start();
-        std::cout << "GateServer listen on port: " << port << std::endl;
+        LOG(INFO) << "GateServer listen on port: " << port;
         ioc.run();
     }
     catch (std::exception &exp) {
-        std::cerr << "Error: " << exp.what() << std::endl;
+        LOG(ERROR) << "Exception Error: " << exp.what();
         return EXIT_FAILURE;
     }
 
