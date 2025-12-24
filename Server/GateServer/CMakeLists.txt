@@ -51,6 +51,10 @@ link_directories(${GRPC_LIBRARY_PATHS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/grpc)
 file(GLOB GRPC_CC "${CMAKE_CURRENT_SOURCE_DIR}/grpc/*.cc")
 
+# redis
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../application/redis/redis/lib)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../application/redis/redis/deps/hiredis)
+
 # 生成目标文件
 add_executable(${PROJECT_NAME} ${SRC_LIST} ${GRPC_CC})
 
@@ -136,4 +140,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         absl_time_zone.lib
         absl_statusor.lib
         re2.lib
+)
+# redis 库文件
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        hiredis.lib
+        Win32_Interop.lib
 )
