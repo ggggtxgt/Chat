@@ -6,7 +6,7 @@ ConfigManager::ConfigManager() {
     boost::filesystem::path current_path = boost::filesystem::current_path();
     // 构建config.ini文件的完整路径（注意 config.ini 文件的目录）
     boost::filesystem::path config_path = current_path / "config.ini";
-    LOG(INFO) << "config path: " << config_path;
+    // LOG(INFO) << "config path: " << config_path;
 
     // 使用boost::property_tree读取 ini 文件
     boost::property_tree::ptree pt;
