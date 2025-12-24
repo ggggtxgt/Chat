@@ -12,7 +12,6 @@ public:
 private:
     tcp::socket _socket;                // 代表一个 TCP 连接端点，用于数据收发
     tcp::acceptor _acceptor;            // 监听指定端口，接受新的 TCP 连接
-    net::io_context &_io_context;       // boost::asio 的事件循环和异步操作调度器
 };
 
 

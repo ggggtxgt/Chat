@@ -36,14 +36,18 @@ class ConfigManager {
 public:
     ~ConfigManager() { _config_map.clear(); }
 
+    // 获取 ConfigManager 唯一实例
+    static ConfigManager &Inst() {
+        static ConfigManager cfg_mgr;
+        return cfg_mgr;
+    }
+
     SectionInfo operator[](const std::string &section) {
         if (_config_map.find(section) == _config_map.end()) {
             return SectionInfo();
         }
         return _config_map[section];
     }
-
-    ConfigManager();
 
     ConfigManager(const ConfigManager &src) { _config_map = src._config_map; }
 
@@ -54,6 +58,9 @@ public:
         _config_map = src._config_map;
         return *this;
     }
+
+private:
+    ConfigManager();
 
 private:
     std::map<std::string, SectionInfo> _config_map;

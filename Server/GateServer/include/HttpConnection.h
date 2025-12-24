@@ -9,9 +9,9 @@ class HttpConnection : public std::enable_shared_from_this<HttpConnection> {
 public:
     friend class LogicSystem;
 
-    HttpConnection(tcp::socket socket);
-
-    void Start();
+    HttpConnection(boost::asio::io_context &ioc);   // 构造函数
+    void Start();                                   // 启动 HTTP 连接
+    tcp::socket &GetSocket();                       // 获取 socket
 
 private:
     void checkDeadline();               // 超时检测

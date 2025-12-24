@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) {
     Glog::GetInstance()->InitLog(argv[0]);
-    ConfigManager fCfgMgr;
+    auto &fCfgMgr = ConfigManager::Inst();
     std::string port_str = fCfgMgr["GateServer"]["Port"];
     unsigned short port = atoi(port_str.c_str());
     try {
