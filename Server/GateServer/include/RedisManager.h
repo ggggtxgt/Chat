@@ -1,17 +1,18 @@
 #ifndef GATESERVER_REDISMANAGER_H
 #define GATESERVER_REDISMANAGER_H
 
+#include <queue>
 #include <assert.h>
 #include <hiredis.h>
 
 #include "Const.h"
+#include "RedisConnPool.h"
 
 class RedisManager : public Singleton<RedisManager> {
     friend class Singleton<RedisManager>;
 
 public:
     ~RedisManager();                                                            // 析构函数
-    bool Connect(const std::string &host, int port);                            // 判断连接是否成功
     bool Get(const std::string &key, std::string &value);                       // 获取指定 key 的字符串值
     bool Set(const std::string &key, const std::string &value);                 // 设置指定 key 的字符串值
     bool Auth(const std::string &password);                                     // 输入 Redis 密码
@@ -30,8 +31,7 @@ private:
     RedisManager();
 
 private:
-    redisReply *_reply;
-    redisContext *_connect;
+    std::unique_ptr<RedisConnPool> _conn_pool;
 };
 
 

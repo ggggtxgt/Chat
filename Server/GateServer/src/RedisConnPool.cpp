@@ -7,43 +7,56 @@ RedisConnPool::RedisConnPool(std::size_t size, const char *host, int port, const
     for (std::size_t i = 0; i < size_; i++) {
         auto *context = redisConnect(host, port);
         if (nullptr == context || context->err != 0) {
-            // 连接出错，释放该连接
+            LOG(ERROR) << "Redis connection failed: "
+                       << (context ? context->errstr : "unknown error");
             if (nullptr != context) {
                 redisFree(context);
             }
             continue;
         }
-        // 每一个连接成功之后，都需要验证密码
-        auto reply = (redisReply *) redisCommand(context, "AUTH %s", pwd);
-        if (REDIS_REPLY_ERROR == reply->type) {
-            // 执行失败，释放 redisCommand 执行之后返回的 redisReply 所占用的内存
+        // 如果设置了密码，进行认证
+        if (pwd && strlen(pwd) > 0) {
+            auto reply = (redisReply *) redisCommand(context, "AUTH %s", pwd);
+            if (reply == nullptr || reply->type == REDIS_REPLY_ERROR) {
+                LOG(ERROR) << "Redis authentication failed: "
+                           << (reply ? reply->str : "unknown error");
+                if (reply) freeReplyObject(reply);
+                redisFree(context);
+                continue;
+            }
             freeReplyObject(reply);
-            redisFree(context);
-            continue;
+            LOG(INFO) << "Redis authentication successful";
         }
-        // 执行成功，释放 redisCommand 执行之后返回的 redisReply 所占用的内存
-        freeReplyObject(reply);
-        LOG(INFO) << "认证成功";
         connections_.push(context);
+        LOG(INFO) << "Redis connection " << i + 1 << "/" << size_ << " created";
+    }
+
+    if (connections_.empty()) {
+        LOG(ERROR) << "Failed to create any Redis connection";
+    } else {
+        LOG(INFO) << "Redis connection pool initialized with "
+                  << connections_.size() << " connections";
     }
 }
 
 RedisConnPool::~RedisConnPool() {
+    Close();
+
     std::lock_guard<std::mutex> lock(mutex_);
     while (!connections_.empty()) {
+        auto context = connections_.front();
         connections_.pop();
+        if (context) {
+            redisFree(context);
+        }
     }
 }
 
-int *RedisConnPool::GetConnection() {
+redisContext *RedisConnPool::GetConnection() {
     std::unique_lock<std::mutex> lock(mutex_);
     cond_.wait(lock, [this]() {
-        if (b_stop_) {
-            return true;
-        }
-        return !connections_.empty();
+        return b_stop_ || !connections_.empty();
     });
-    // 如果停止则直接返回空指针
     if (b_stop_) {
         return nullptr;
     }
@@ -54,12 +67,15 @@ int *RedisConnPool::GetConnection() {
 
 void RedisConnPool::ReturnConnection(redisContext *context) {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (b_stop_) return;
+    if (b_stop_ || context == nullptr) return;
     connections_.push(context);
     cond_.notify_one();
 }
 
 void RedisConnPool::Close() {
-    b_stop_ = true;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        b_stop_ = true;
+    }
     cond_.notify_all();
 }
