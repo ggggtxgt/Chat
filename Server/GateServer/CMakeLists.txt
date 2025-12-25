@@ -55,6 +55,10 @@ file(GLOB GRPC_CC "${CMAKE_CURRENT_SOURCE_DIR}/grpc/*.cc")
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../application/redis/redis/lib)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../application/redis/redis/deps/hiredis)
 
+# Mysql Connection C++
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../application/MySql/mysql_connector/include)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../application/MySql/mysql_connector/lib64/vs14/debug)
+
 # 生成目标文件
 add_executable(${PROJECT_NAME} ${SRC_LIST} ${GRPC_CC})
 
@@ -63,6 +67,20 @@ if (WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_CURRENT_SOURCE_DIR}/config.ini"
+            # 运行 glog 所需的动态库
+            "${CMAKE_CURRENT_SOURCE_DIR}/lib/glogd.dll"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    )
+endif ()
+
+# 复制 Mysql dll 文件到输出目录
+if (WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_SOURCE_DIR}/lib/mysqlcppconn8-2-vs14.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/lib/mysqlcppconn-9-vs14.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/lib/libcrypto-3-x64.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/lib/libssl-3-x64.dll"
             $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 endif ()
@@ -145,4 +163,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PRIVATE
         hiredis.lib
         Win32_Interop.lib
+)
+
+# Mysql Connector C++ 库文件
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        mysqlcppconn.lib
+        mysqlcppconn8.lib
 )
