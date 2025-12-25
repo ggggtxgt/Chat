@@ -20,6 +20,16 @@ enum ErrorCodes {
     Success = 0,                        // 成功
     Error_Json = 1001,                  // JSON 解析错误
     RPCFailed = 1002,                   // RPC 连接失败
+    VarifyExpired = 1003,               // 验证码过期
+    VarifyCodeErr = 1004,               // 验证码错误
+    UserExist = 1005,                   // 用户已经存在
+    PasswordErr = 1006,                 // 密码错误
+    EmailNotMatch = 1007,               // 邮箱不匹配
+    PasswordUpFailed = 1008,            // 更新密码失败
+    PasswordInvalid = 1009,             // 密码更新失败
 };
+
+// 添加前缀
+#define CODEPREFIX "code_"
 
 #endif //GATESERVER_CONST_H

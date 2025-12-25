@@ -1,5 +1,6 @@
 #include "Glog.h"
 #include "LogicSystem.h"
+#include "RedisManager.h"
 #include "HttpConnection.h"
 #include "VerifyGrpcClient.h"
 
@@ -49,6 +50,66 @@ LogicSystem::LogicSystem() {
         root["email"] = src_root["email"];
         std::string str = root.toStyledString();
         beast::ostream(connection->_response.body()) << str;
+        return true;
+    });
+
+    RegisterPost("/user_register", [](std::shared_ptr<HttpConnection> conn) {
+        auto body_str = boost::beast::buffers_to_string(conn->_request.body().data());
+        LOG(INFO) << "receive body is: " << body_str;
+        conn->_response.set(http::field::content_type, "text/json");
+        Json::Value root;
+        Json::Reader reader;
+        Json::Value src_root;
+        bool parse_success = reader.parse(body_str, src_root);
+        if (!parse_success) {
+            LOG(ERROR) << "Failed to parse JSON data !";
+            root["root"] = ErrorCodes::Error_Json;
+            std::string str = root.toStyledString();
+            beast::ostream(conn->_response.body()) << str;
+            return true;
+        }
+        // 先查找redis中email对应的验证码是否合理
+        std::string varify_code;
+        // 注意需要添加前缀
+        bool b_get_varify = RedisManager::GetInstance()->Get(CODEPREFIX + src_root["email"].asString(), varify_code);
+        if (!b_get_varify) {
+            std::cout << " get varify code expired" << std::endl;
+            root["error"] = ErrorCodes::VarifyExpired;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(conn->_response.body()) << jsonstr;
+            return true;
+        }
+
+        // 验证码错误
+        if (varify_code != src_root["varifycode"].asString()) {
+            std::cout << " varify code error" << std::endl;
+            root["error"] = ErrorCodes::VarifyCodeErr;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(conn->_response.body()) << jsonstr;
+            return true;
+        }
+
+        // 访问redis查找
+        /*
+        bool b_usr_exist = RedisManager::GetInstance()->ExistsKey(src_root["user"].asString());
+        if (b_usr_exist) {
+            std::cout << " user exist" << std::endl;
+            root["error"] = ErrorCodes::UserExist;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(connection->_response.body()) << jsonstr;
+            return true;
+        }
+        */
+
+        // 查找数据库判断用户是否存在
+        root["error"] = 0;
+        root["email"] = src_root["email"];
+        root["user"] = src_root["user"].asString();
+        root["passwd"] = src_root["passwd"].asString();
+        root["confirm"] = src_root["confirm"].asString();
+        root["varifycode"] = src_root["varifycode"].asString();
+        std::string jsonstr = root.toStyledString();
+        beast::ostream(conn->_response.body()) << jsonstr;
         return true;
     });
 }

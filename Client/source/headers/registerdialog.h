@@ -37,16 +37,11 @@ private:
 
 private slots:
 
-    void on_get_code_clicked();                     // [获取验证码] 按钮对应的槽函数
+    void on_sure_btn_clicked();
 
-    /******************************************************************************
-     * @func      slot_register_finish
-     * @brief     用来接收并处理注册相关 HTTP 请求结果
-     * @param     HTTP 请求的不同目的
-     * @param     服务器返回的结果（一般为 JSON 格式）
-     * @param     HTTP 请求发送失败的错误类型
-    *****************************************************************************/
-    void slot_register_finish(RequestId id, QString res, ErrorCodes err);
+    void on_get_code_clicked();                                     // [获取验证码] 按钮对应的槽函数
+    void slot_register_finish(RequestId, QString, ErrorCodes);      // 接收并处理注册相关 HTTP 请求结果
+
 };
 
 
