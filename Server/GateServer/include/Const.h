@@ -32,4 +32,16 @@ enum ErrorCodes {
 // 添加前缀
 #define CODEPREFIX "code_"
 
+class Defer {
+public:
+    // 接受一个 lambda 表达式或者函数指针
+    Defer(std::function<void()> func) : func_(func) {}
+
+    // 析构函数中执行传入的函数
+    ~Defer() { func_(); }
+
+private:
+    std::function<void()> func_;
+};
+
 #endif //GATESERVER_CONST_H
