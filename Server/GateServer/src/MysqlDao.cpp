@@ -1,8 +1,11 @@
 #include "Glog.h"
 #include "MysqlDao.h"
+
+#include <utility>
 #include "ConfigManager.h"
 
-MysqlConnPool::MysqlConnPool(const std::string &url, const std::string &user, std::string &pass, const std::string &schema, int size)
+MysqlConnPool::MysqlConnPool(const std::string &url, const std::string &user,
+                             const std::string &pass, const std::string &schema, int size)
         : url_(url), user_(user), passwd_(pass), schema_(schema), size_(size), b_stop_(false) {
     try {
         for (int i = 0; i < size_; i++) {

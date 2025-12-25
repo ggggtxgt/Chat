@@ -1,6 +1,7 @@
 #include "Glog.h"
 #include "LogicSystem.h"
 #include "RedisManager.h"
+#include "MysqlManager.h"
 #include "HttpConnection.h"
 #include "VerifyGrpcClient.h"
 
@@ -55,7 +56,7 @@ LogicSystem::LogicSystem() {
 
     RegisterPost("/user_register", [](std::shared_ptr<HttpConnection> conn) {
         auto body_str = boost::beast::buffers_to_string(conn->_request.body().data());
-        LOG(INFO) << "receive body is: " << body_str;
+        LOG(INFO) << "receive body is: \n" << body_str;
         conn->_response.set(http::field::content_type, "text/json");
         Json::Value root;
         Json::Reader reader;
@@ -68,6 +69,20 @@ LogicSystem::LogicSystem() {
             beast::ostream(conn->_response.body()) << str;
             return true;
         }
+
+        auto email = src_root["email"].asString();
+        auto name = src_root["user"].asString();
+        auto pwd = src_root["passwd"].asString();
+        auto confirm = src_root["confirm"].asString();
+
+        if (pwd != confirm) {
+            std::cout << "password err" << std::endl;
+            root["error"] = ErrorCodes::PasswordErr;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(conn->_response.body()) << jsonstr;
+            return true;
+        }
+
         // 先查找redis中email对应的验证码是否合理
         std::string varify_code;
         // 注意需要添加前缀
@@ -102,11 +117,20 @@ LogicSystem::LogicSystem() {
         */
 
         // 查找数据库判断用户是否存在
+        int uid = MysqlManager::GetInstance()->RegisterUser(name, email, pwd);
+        if (0 == uid || -1 == uid) {
+            std::cout << "user or email exist" << std::endl;
+            root["error"] = ErrorCodes::UserExist;
+            std::string jsonstr = root.toStyledString();
+            beast::ostream(conn->_response.body()) << jsonstr;
+            return true;
+        }
         root["error"] = 0;
-        root["email"] = src_root["email"];
-        root["user"] = src_root["user"].asString();
-        root["passwd"] = src_root["passwd"].asString();
-        root["confirm"] = src_root["confirm"].asString();
+        root["uid"] = uid;
+        root["email"] = email;
+        root["user"] = name;
+        root["passwd"] = pwd;
+        root["confirm"] = confirm;
         root["varifycode"] = src_root["varifycode"].asString();
         std::string jsonstr = root.toStyledString();
         beast::ostream(conn->_response.body()) << jsonstr;

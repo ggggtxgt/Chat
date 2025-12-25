@@ -22,8 +22,8 @@ public:
 
 class MysqlConnPool {
 public:
-    MysqlConnPool(const std::string &, const std::string &,
-                  std::string &, const std::string &, int); // 构造函数
+    MysqlConnPool(const std::string &, const std::string &, const std::string &,
+                  const std::string &, int);                // 构造函数
     ~MysqlConnPool();                                       // 析构函数
     void CheckConnection();                                 // 检测连接是否存活
     std::unique_ptr<SqlConnection> GetConnection();          // 获取 Mysql 连接

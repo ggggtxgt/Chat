@@ -136,8 +136,8 @@ void RegisterDialog::initHttpHandlers() {
             showTip(tr("参数错误"), false);
             return;
         }
-        auto email = json["email"].toString();
         showTip(tr("用户注册成功"), true);
-        qDebug() << "email is: " << email;
+        qDebug() << "user uid is: " << json["uid"].toInt();
+        qDebug() << "email is: " << json["email"].toString();
     });
 }
