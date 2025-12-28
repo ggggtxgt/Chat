@@ -199,6 +199,6 @@ void ResetDialog::on_return_btn_clicked() {
     emit switchLogin();
 }
 
-void ResetDialog::on_cancel_btn_clicked() {
-
-}
+//void ResetDialog::on_cancel_btn_clicked() {
+//
+//}

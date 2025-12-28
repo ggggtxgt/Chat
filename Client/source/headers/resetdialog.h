@@ -46,7 +46,9 @@ private:
 private slots:
 
     void on_sure_btn_clicked();                                 // [确认]按钮
+    /*
     void on_cancel_btn_clicked();                               // [取消]按钮
+    **/
     void on_varify_btn_clicked();                               // [获取]按钮
     void on_return_btn_clicked();                               // [返回]按钮
     void slot_reset_finish(RequestId, QString, ErrorCodes);     // [忘记密码]按钮

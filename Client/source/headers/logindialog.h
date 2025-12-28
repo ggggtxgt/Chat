@@ -25,9 +25,14 @@ public:
 private:
     Ui::LoginDialog *ui;
 
+public slots:
+
+    void slot_forget_pwd();         // [忘记密码]对应的槽函数
+
 signals:
 
     void switchRegister();          // 切换到注册界面
+    void switchReset();             // 切换到重置界面
 };
 
 

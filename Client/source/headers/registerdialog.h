@@ -50,14 +50,17 @@ signals:
 
     void sigSwitchLogin();
 
+public slots:
+
+    void slot_register_finish(RequestId, QString, ErrorCodes);      // 接收并处理注册相关 HTTP 请求结果
+
+
 private slots:
 
     void on_cancel_btn_clicked();                                   // 注册界面[取消]按钮
     void on_return_btn_clicked();                                   // 注册界面[返回]按钮
     void on_sure_btn_clicked();                                     // 注册登录[确认]按钮
     void on_get_code_clicked();                                     // [获取验证码] 按钮对应的槽函数
-    void slot_register_finish(RequestId, QString, ErrorCodes);      // 接收并处理注册相关 HTTP 请求结果
-
 };
 
 
