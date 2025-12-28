@@ -20,6 +20,35 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
             this, &RegisterDialog::slot_register_finish);
 
     initHttpHandlers();
+
+    // 鼠标移到[眼睛]位置，将会变成[小手]
+    ui->password_visible->setCursor(Qt::PointingHandCursor);
+    ui->confirm_visible->setCursor(Qt::PointingHandCursor);
+    // 设置多种状态样式
+    ui->password_visible->SetState("unvisible", "unvisible_hover", "",
+                                   "visible", "visible_hover", "");
+
+    ui->confirm_visible->SetState("unvisible", "unvisible_hover", "",
+                                  "visible", "visible_hover", "");
+    // 连接点击事件
+    connect(ui->password_visible, &ClickedLabel::clicked, this, [this]() {
+        auto state = ui->password_visible->GetCurState();
+        if (ClickLbState::Normal == state) {
+            ui->password_edit->setEchoMode(QLineEdit::Password);
+        } else {
+            ui->password_edit->setEchoMode(QLineEdit::Normal);
+        }
+        qDebug() << "passwd label was clicked!";
+    });
+    connect(ui->confirm_visible, &ClickedLabel::clicked, this, [this]() {
+        auto state = ui->confirm_visible->GetCurState();
+        if (state == ClickLbState::Normal) {
+            ui->confirm_edit->setEchoMode(QLineEdit::Password);
+        } else {
+            ui->confirm_edit->setEchoMode(QLineEdit::Normal);
+        }
+        qDebug() << "confirm abel was clicked!";
+    });
 }
 
 RegisterDialog::~RegisterDialog() {

@@ -42,6 +42,12 @@ enum ErrorCodes {
     ERR_NETWORK = 2,                        // 网络错误
 };
 
+// label 的两种基本状态
+enum ClickLbState{
+    Normal = 0,
+    Selected = 1
+};
+
 // 使用 md5 对密码进行加密
 extern QString md5Encrypt(const QString &input);
 
