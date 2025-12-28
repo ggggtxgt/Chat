@@ -42,6 +42,9 @@ enum ErrorCodes {
     ERR_NETWORK = 2,                        // 网络错误
 };
 
+// 使用 md5 对密码进行加密
+extern QString md5Encrypt(const QString &input);
+
 // 发送 post 请求的网络前缀
 extern QString url_prefix;
 
