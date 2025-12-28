@@ -21,6 +21,30 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
 
     initHttpHandlers();
 
+    // 清空初始时的错误提示
+    ui->error_tip->clear();
+
+    // 编辑完毕之后，发送信号，调用检测函数
+    connect(ui->user_edit, &QLineEdit::editingFinished, this, [this]() {
+        checkUserValid();
+    });
+
+    connect(ui->email_edit, &QLineEdit::editingFinished, this, [this]() {
+        checkEmailValid();
+    });
+
+    connect(ui->password_edit, &QLineEdit::editingFinished, this, [this]() {
+        checkPassValid();
+    });
+
+    connect(ui->confirm_edit, &QLineEdit::editingFinished, this, [this]() {
+        checkConfirmValid();
+    });
+
+    connect(ui->varify_edit, &QLineEdit::editingFinished, this, [this]() {
+        checkVarifyValid();
+    });
+
     // 鼠标移到[眼睛]位置，将会变成[小手]
     ui->password_visible->setCursor(Qt::PointingHandCursor);
     ui->confirm_visible->setCursor(Qt::PointingHandCursor);
@@ -104,35 +128,17 @@ void RegisterDialog::slot_register_finish(RequestId id, QString res, ErrorCodes 
 }
 
 void RegisterDialog::on_sure_btn_clicked() {
-    if (ui->user_edit->text() == "") {
-        showTip(tr("用户名不能为空"), false);
-        return;
-    }
-
-    if (ui->email_edit->text() == "") {
-        showTip(tr("邮箱不能为空"), false);
-        return;
-    }
-
-    if (ui->password_edit->text() == "") {
-        showTip(tr("密码不能为空"), false);
-        return;
-    }
-
-    if (ui->confirm_edit->text() == "") {
-        showTip(tr("确认密码不能为空"), false);
-        return;
-    }
-
-    if (ui->confirm_edit->text() != ui->password_edit->text()) {
-        showTip(tr("密码和确认密码不匹配"), false);
-        return;
-    }
-
-    if (ui->varify_edit->text() == "") {
-        showTip(tr("验证码不能为空"), false);
-        return;
-    }
+    // 所有条件都正确，才能发送请求：
+    bool valid = checkUserValid();
+    if (!valid) { return; }
+    valid = checkEmailValid();
+    if (!valid) { return; }
+    valid = checkPassValid();
+    if (!valid) { return; }
+    valid = checkConfirmValid();
+    if (!valid) { return; }
+    valid = checkVarifyValid();
+    if (!valid) { return; }
 
     QJsonObject json_obj;
     json_obj["user"] = ui->user_edit->text();
@@ -169,4 +175,83 @@ void RegisterDialog::initHttpHandlers() {
         qDebug() << "user uid is: " << json["uid"].toInt();
         qDebug() << "email is: " << json["email"].toString();
     });
+}
+
+
+void RegisterDialog::addTipErr(TipErr te, QString tips) {
+    _tip_errs[te] = tips;
+    showTip(tips, false);
+}
+
+void RegisterDialog::delTipErr(TipErr te) {
+    _tip_errs.remove(te);
+    if (_tip_errs.empty()) {
+        ui->error_tip->clear();
+        return;
+    }
+    showTip(_tip_errs.first(), false);
+}
+
+bool RegisterDialog::checkUserValid() {
+    if (ui->user_edit->text() == "") {
+        addTipErr(TipErr::TIP_USER_ERR, tr("用户名称不能为空"));
+        return false;
+    }
+    delTipErr(TipErr::TIP_USER_ERR);
+    return true;
+}
+
+bool RegisterDialog::checkEmailValid() {
+    auto email = ui->email_edit->text();
+    // 通过正则表达式判断邮箱的样式
+    QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
+    bool match = regex.match(email).hasMatch();
+    if (!match) {
+        addTipErr(TipErr::TIP_EMAIL_ERR, tr("邮箱地址错误"));
+        return false;
+    }
+    delTipErr(TipErr::TIP_EMAIL_ERR);
+    return true;
+}
+
+bool RegisterDialog::checkPassValid() {
+    auto pwd = ui->password_edit->text();
+    // 限制密码长度
+    if (pwd.length() < 6 || pwd.length() > 15) {
+        addTipErr(TipErr::TIP_PWD_ERR, tr("密码长度就为6~15"));
+        return false;
+    }
+    // 使用正则表达式判断是否存在非法字符
+    // ^[a-zA-Z0-9!@#$%^&*]{6,15}$ 密码长度至少6，可以是字母、数字和特定的特殊字符
+    QRegularExpression regExp("^[a-zA-Z0-9!@#$%^&*]{6,15}$");
+    bool match = regExp.match(pwd).hasMatch();
+    // 存在非法字符
+    if (!match) {
+        addTipErr(TipErr::TIP_PWD_ERR, tr("不能包含非法字符"));
+        return false;
+    }
+    delTipErr(TipErr::TIP_PWD_ERR);
+    return true;
+}
+
+bool RegisterDialog::checkConfirmValid() {
+    // 判断确定密码：只需判断与原密码是否相同即可
+    auto pwd = ui->password_edit->text();
+    auto confirm = ui->confirm_edit->text();
+    if (pwd != confirm) {
+        addTipErr(TipErr::TIP_PWD_CONFIRM, tr("再次密码不一致"));
+        return false;
+    }
+    delTipErr(TipErr::TIP_PWD_CONFIRM);
+    return true;
+}
+
+bool RegisterDialog::checkVarifyValid() {
+    auto code = ui->varify_edit->text();
+    if (code.isEmpty()) {
+        addTipErr(TipErr::TIP_VARIFY_ERR, tr("验证码错误"));
+        return false;
+    }
+    delTipErr(TipErr::TIP_VARIFY_ERR);
+    return true;
 }

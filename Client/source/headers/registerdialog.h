@@ -30,10 +30,18 @@ private:
 
     // key--请求目的；value--函数对象
     QMap<RequestId, std::function<void(const QJsonObject &)>> _handlers;
+    QMap<TipErr, QString> _tip_errs;
 
 private:
     void showTip(QString str, bool b_ok);           // 展示[错误提示]标签
     void initHttpHandlers();                        // 初始化 HTTP 请求处理器
+    void addTipErr(TipErr te, QString tips);        // 添加错误信息
+    void delTipErr(TipErr te);                      // 删除错误信息
+    bool checkUserValid();                          // 检查用户信息
+    bool checkEmailValid();                         // 检查邮箱信息
+    bool checkPassValid();                          // 检查密码信息
+    bool checkConfirmValid();                       // 检查重复密码信息
+    bool checkVarifyValid();                        // 检查验证码信息
 
 private slots:
 
