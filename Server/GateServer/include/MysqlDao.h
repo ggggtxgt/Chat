@@ -26,7 +26,7 @@ public:
                   const std::string &, int);                // 构造函数
     ~MysqlConnPool();                                       // 析构函数
     void CheckConnection();                                 // 检测连接是否存活
-    std::unique_ptr<SqlConnection> GetConnection();          // 获取 Mysql 连接
+    std::unique_ptr<SqlConnection> GetConnection();         // 获取 Mysql 连接
     void ReturnConnection(std::unique_ptr<SqlConnection>);  // 归还 Mysql 连接
     void Close();                                           // 关闭 MysqlConnPool
 
@@ -53,10 +53,13 @@ struct UserInfo {
 
 class MysqlDao {
 public:
-    MysqlDao();                                         // 构造函数
-    ~MysqlDao();                                        // 析构函数
+    MysqlDao();                                                     // 构造函数
+    ~MysqlDao();                                                    // 析构函数
+    bool CheckEmail(const std::string &, const std::string &);      // 检查用户邮箱
     int RegisterUser(const std::string &, const std::string &,
-                     const std::string &);              // 录入用户信息
+                     const std::string &);                          // 录入用户信息
+    bool UpdatePwd(const std::string &, const std::string &);       // 更新用户密码
+    int GetUserIdByName(const std::string &name);                   // 根据姓名查询 uid
 
 private:
     std::unique_ptr<MysqlConnPool> conpool_;

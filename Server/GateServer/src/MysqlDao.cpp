@@ -159,3 +159,101 @@ int MysqlDao::RegisterUser(const std::string &name, const std::string &email, co
         return -1;
     }
 }
+
+bool MysqlDao::CheckEmail(const std::string &name, const std::string &email) {
+    auto con = conpool_->GetConnection();
+    try {
+        if (con == nullptr) {
+            conpool_->ReturnConnection(std::move(con));
+            return false;
+        }
+
+        // 准备查询语句
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+                con->_con->prepareStatement("SELECT email FROM user WHERE name = ?"));
+
+        // 绑定参数
+        pstmt->setString(1, name);
+
+        // 执行查询
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+
+        // 遍历结果集
+        while (res->next()) {
+            std::cout << "Check Email: " << res->getString("email") << std::endl;
+            if (email != res->getString("email")) {
+                conpool_->ReturnConnection(std::move(con));
+                return false;
+            }
+            conpool_->ReturnConnection(std::move(con));
+            return true;
+        }
+    }
+    catch (sql::SQLException &e) {
+        conpool_->ReturnConnection(std::move(con));
+        std::cerr << "SQLException: " << e.what();
+        std::cerr << " (MySQL error code: " << e.getErrorCode();
+        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        return false;
+    }
+}
+
+bool MysqlDao::UpdatePwd(const std::string &name, const std::string &newpwd) {
+    auto con = conpool_->GetConnection();
+    try {
+        if (con == nullptr) {
+            conpool_->ReturnConnection(std::move(con));
+            return false;
+        }
+
+        // 准备查询语句
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+                con->_con->prepareStatement("UPDATE user SET pwd = ? WHERE name = ?"));
+
+        // 绑定参数
+        pstmt->setString(2, name);
+        pstmt->setString(1, newpwd);
+
+        // 执行更新
+        int updateCount = pstmt->executeUpdate();
+
+        std::cout << "Updated rows: " << updateCount << std::endl;
+        conpool_->ReturnConnection(std::move(con));
+        return true;
+    }
+    catch (sql::SQLException &e) {
+        conpool_->ReturnConnection(std::move(con));
+        std::cerr << "SQLException: " << e.what();
+        std::cerr << " (MySQL error code: " << e.getErrorCode();
+        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        return false;
+    }
+}
+
+int MysqlDao::GetUserIdByName(const std::string &name) {
+    auto con = conpool_->GetConnection();
+    try {
+        if (con == nullptr) {
+            conpool_->ReturnConnection(std::move(con));
+            return -1;
+        }
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+                con->_con->prepareStatement("SELECT uid FROM user WHERE name = ?"));
+
+        pstmt->setString(1, name);
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+
+        if (res->next()) {
+            int uid = res->getInt("uid");
+            conpool_->ReturnConnection(std::move(con));
+            return uid;
+        }
+        conpool_->ReturnConnection(std::move(con));
+        return -1;
+    }
+    catch (sql::SQLException &e) {
+        conpool_->ReturnConnection(std::move(con));
+        LOG(ERROR) << "SQLException in GetUserIdByName: " << e.what();
+        return -1;
+    }
+}

@@ -9,8 +9,13 @@ class MysqlManager : public Singleton<MysqlManager> {
 
 public:
     ~MysqlManager();                            // 析构函数
+    bool CheckEmail(const std::string &,
+                    const std::string &);       // 调用 MySQLDao 检查用户邮箱
     int RegisterUser(const std::string &, const std::string &,
                      const std::string &);      // 调用 MySQLDao 录入用户信息
+    bool UpdatePwd(const std::string &,
+                   const std::string &);        // 调用 MySQLDao 更新用户密码
+    int GetUserIdByName(const std::string &);   // 调用 MySQLDao 根据姓名查询 uid
 
 private:
     MysqlManager();
