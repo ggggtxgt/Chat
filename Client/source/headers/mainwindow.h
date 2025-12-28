@@ -32,6 +32,7 @@ private:
 
 private slots:
 
+    void SlotSwitchLogin();             // 槽函数：[注册界面] ---> [登录界面]
     void SlotSwitchRegister();          // 槽函数：[登录界面] ---> [注册界面]
 };
 

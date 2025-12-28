@@ -30,7 +30,9 @@ private:
 
     // key--请求目的；value--函数对象
     QMap<RequestId, std::function<void(const QJsonObject &)>> _handlers;
-    QMap<TipErr, QString> _tip_errs;
+    QMap<TipErr, QString> _tip_errs;                        // 错误提示映射表
+    QTimer *_countdown_timer;                               // 倒计时计时器
+    int _countdown;                                         // 回到登录界面的倒计时
 
 private:
     void showTip(QString str, bool b_ok);           // 展示[错误提示]标签
@@ -42,11 +44,17 @@ private:
     bool checkPassValid();                          // 检查密码信息
     bool checkConfirmValid();                       // 检查重复密码信息
     bool checkVarifyValid();                        // 检查验证码信息
+    void changeTipPage();                           // 注册成功，回到登录界面
+
+signals:
+
+    void sigSwitchLogin();
 
 private slots:
 
-    void on_sure_btn_clicked();
-
+    void on_cancel_btn_clicked();                                   // 注册界面[取消]按钮
+    void on_return_btn_clicked();                                   // 注册界面[返回]按钮
+    void on_sure_btn_clicked();                                     // 注册登录[确认]按钮
     void on_get_code_clicked();                                     // [获取验证码] 按钮对应的槽函数
     void slot_register_finish(RequestId, QString, ErrorCodes);      // 接收并处理注册相关 HTTP 请求结果
 
