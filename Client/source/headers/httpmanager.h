@@ -33,6 +33,7 @@ public:
  * @param     发送 HTTP 请求的模块
 *****************************************************************************/
     void PostHttpRequest(QUrl url, QJsonObject json, RequestId id, Module module);
+
 private:
     friend class Singleton<HttpManager>;    // 指定友元
     HttpManager();                          // 构造函数
@@ -57,6 +58,8 @@ signals:
     void signal_http_finish(RequestId id, QString res, ErrorCodes err, Module module);
 
     void signal_register_finish(RequestId id, QString res, ErrorCodes err);
+
+    void signal_reset_finish(RequestId id, QString str, ErrorCodes code);
 };
 
 
