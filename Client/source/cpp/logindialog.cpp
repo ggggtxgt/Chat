@@ -141,7 +141,7 @@ bool LoginDialog::enableBtn(bool enabled) {
 }
 
 void LoginDialog::initHttpHandlers() {
-//注册获取登录回包逻辑
+    // 注册获取登录回包逻辑
     _handlers.insert(RequestId::ID_LOGIN_USER, [this](QJsonObject jsonObj) {
         int error = jsonObj["error"].toInt();
         if (error != ErrorCodes::SUCCESS) {
@@ -150,7 +150,7 @@ void LoginDialog::initHttpHandlers() {
             return;
         }
         auto email = jsonObj["email"].toString();
-        //发送信号通知tcpMgr发送长链接
+        // 发送信号通知tcpMgr发送长链接
         ServerInfo si;
         si.Uid = jsonObj["uid"].toInt();
         si.Host = jsonObj["host"].toString();
@@ -159,8 +159,8 @@ void LoginDialog::initHttpHandlers() {
 
         _uid = si.Uid;
         _token = si.Token;
-        qDebug() << "email is " << email << " uid is " << si.Uid << " host is "
-                 << si.Host << " Port is " << si.Port << " Token is " << si.Token;
+        qDebug() << "email is:" << email << "\nuid is: " << si.Uid << "\nhost is: "
+                 << si.Host << "\nPort is: " << si.Port << "\nToken is: " << si.Token;
         emit signal_connect_tcp(si);
     });
 }
