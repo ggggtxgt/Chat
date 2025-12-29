@@ -3,6 +3,7 @@
 #include <QAbstractSocket>
 
 #include "tcpmanager.h"
+#include "UserManager.h"
 
 TcpManager::TcpManager() : _host(""), _port(0), _b_recv_pending(false), _message_id(0), _message_len(0) {
     QObject::connect(&_socket, &QTcpSocket::connected, [&]() {
@@ -113,7 +114,9 @@ void TcpManager::initHandlers() {
             return;
         }
 
-        // @todo 将信息存入用户管理
+        UserManager::GetInstance()->SetUid(jsonObj["uid"].toInt());
+        UserManager::GetInstance()->SetName(jsonObj["name"].toString());
+        UserManager::GetInstance()->SetToken(jsonObj["token"].toString());
         emit signal_switch_chatdlg();
     });
 }
