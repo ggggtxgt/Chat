@@ -60,6 +60,8 @@ public:
                      const std::string &);                          // 录入用户信息
     bool UpdatePwd(const std::string &, const std::string &);       // 更新用户密码
     int GetUserIdByName(const std::string &name);                   // 根据姓名查询 uid
+    bool CheckPwd(const std::string &email, const std::string &pwd,
+                  UserInfo &userInfo);                              // 判断密码是否正确
 
 private:
     std::unique_ptr<MysqlConnPool> conpool_;

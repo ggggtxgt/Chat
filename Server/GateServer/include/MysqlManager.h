@@ -16,6 +16,8 @@ public:
     bool UpdatePwd(const std::string &,
                    const std::string &);        // 调用 MySQLDao 更新用户密码
     int GetUserIdByName(const std::string &);   // 调用 MySQLDao 根据姓名查询 uid
+    bool CheckPwd(const std::string &email, const std::string &pwd,
+                  UserInfo &userInfo);          // 调用 MySQLDao 判断密码是否正确
 
 private:
     MysqlManager();
