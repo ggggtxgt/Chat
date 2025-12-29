@@ -16,7 +16,7 @@ class MsgNode {
 public:
     MsgNode(short max_len);                                     // 构造函数
     ~MsgNode();                                                 // 析构函数
-    void Clear();                                               //
+    void Clear();                                               // 清空
 
 public:
     char *_data;
