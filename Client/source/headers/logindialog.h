@@ -46,13 +46,15 @@ public slots:
 
     void slot_forget_pwd();                                 // [忘记密码]对应的槽函数
     void on_login_btn_clicked();                            // [登录]按钮对应的槽函数
-    void slot_login_finish(RequestId, QString, ErrorCodes); //
+    void slot_login_finish(RequestId, QString, ErrorCodes); // 处理 HTTP 登录请求的响应
+    void slot_tcp_con_finish(bool b_success);               // 处理 TCP 连接完成之后的回调
+    void slot_login_failed(int err);                        // 处理 TCP 登录失败的情况
 
 signals:
 
     void switchRegister();                                  // 切换到注册界面
     void switchReset();                                     // 切换到重置界面
-    void signal_connect_tcp(ServerInfo si);                 //
+    void signal_connect_tcp(ServerInfo si);                 // 请求连接到 TCP 服务器
     void signal_login_finish();                             //
 };
 

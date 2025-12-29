@@ -2,6 +2,7 @@
 #include <QDirIterator>
 #include <QImageReader>
 
+#include "TcpManager.h"
 #include "httpmanager.h"
 #include "logindialog.h"
 #include "clickedlabel.h"
@@ -22,6 +23,12 @@ LoginDialog::LoginDialog(QWidget *parent) :
     // 连接登录回包信号
     connect(HttpManager::GetInstance().get(), &HttpManager::signal_login_finish,
             this, &LoginDialog::slot_login_finish);
+    // 连接 tcp 连接请求的信号和槽函数
+    connect(this, &LoginDialog::signal_connect_tcp, TcpManager::GetInstance().get(), &TcpManager::slot_tcp_connect);
+    // 连接 tcp 管理者发出的连接成功信号
+    connect(TcpManager::GetInstance().get(), &TcpManager::signal_con_success, this, &LoginDialog::slot_tcp_con_finish);
+    // 连接 tcp 管理者发出的登录失败信号
+    connect(TcpManager::GetInstance().get(), &TcpManager::signal_login_failed, this, &LoginDialog::slot_login_failed);
 }
 
 LoginDialog::~LoginDialog() {
@@ -159,7 +166,7 @@ void LoginDialog::initHttpHandlers() {
 
         _uid = si.Uid;
         _token = si.Token;
-        qDebug() << "email is:" << email << "\nuid is: " << si.Uid << "\nhost is: "
+        qDebug() << "email is:" << email << "\nUid is: " << si.Uid << "\nHost is: "
                  << si.Host << "\nPort is: " << si.Port << "\nToken is: " << si.Token;
         emit signal_connect_tcp(si);
     });
@@ -172,12 +179,12 @@ void LoginDialog::slot_login_finish(RequestId id, QString res, ErrorCodes err) {
     }
     // 解析 JSON 字符串,res需转化为QByteArray
     QJsonDocument jsonDoc = QJsonDocument::fromJson(res.toUtf8());
-    //json解析错误
+    // json解析错误
     if (jsonDoc.isNull()) {
         showTip(tr("json解析错误"), false);
         return;
     }
-    //json解析错误
+    // json解析错误
     if (!jsonDoc.isObject()) {
         showTip(tr("json解析错误"), false);
         return;
@@ -185,4 +192,28 @@ void LoginDialog::slot_login_finish(RequestId id, QString res, ErrorCodes err) {
     // 调用对应的逻辑,根据id回调。
     _handlers[id](jsonDoc.object());
     return;
+}
+
+void LoginDialog::slot_tcp_con_finish(bool bsuccess) {
+    if (bsuccess) {
+        showTip(tr("聊天服务连接成功，正在登录..."), true);
+        QJsonObject jsonObj;
+        jsonObj["uid"] = _uid;
+        jsonObj["token"] = _token;
+
+        QJsonDocument doc(jsonObj);
+        QString jsonString = doc.toJson(QJsonDocument::Indented);
+        // 发送tcp请求给chat server
+        TcpManager::GetInstance()->signal_send_data(RequestId::ID_CHAT_LOGIN, jsonString);
+    } else {
+        showTip(tr("网络异常"), false);
+        enableBtn(true);
+    }
+}
+
+void LoginDialog::slot_login_failed(int err) {
+    QString result = QString("登录失败, err is %1")
+            .arg(err);
+    showTip(result, false);
+    enableBtn(true);
 }

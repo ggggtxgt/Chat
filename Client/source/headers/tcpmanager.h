@@ -48,7 +48,7 @@ signals:
     void signal_con_success(bool b_success);                    // 连接成功
     void signal_send_data(RequestId id, QString data);          // 发送信息
 
-private slots:
+public slots:
 
     void slot_tcp_connect(ServerInfo);                          // 建立 TCP 连接
     void slot_send_data(RequestId id, QString data);            // 发送信息
