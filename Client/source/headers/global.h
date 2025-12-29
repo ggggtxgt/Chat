@@ -36,8 +36,9 @@ enum RequestId {
 
 // 发送 HTTP 请求的模块
 enum Module {
-    REGISTERMOD = 0,                        // 注册
-    RESETMOD = 1,                           // 重置密码
+    REGISTERMOD = 0,            // 注册
+    RESETMOD = 1,               // 重置密码
+    LOGINMOD = 2,               // 登录
 };
 
 // HTTP 请求发送失败的错误类型
@@ -62,6 +63,14 @@ enum TipErr {
 enum ClickLbState {
     Normal = 0,
     Selected = 1
+};
+
+// 服务器返回的信息
+struct ServerInfo {
+    QString Host;
+    QString Port;
+    QString Token;
+    int Uid;
 };
 
 // 使用 md5 对密码进行加密

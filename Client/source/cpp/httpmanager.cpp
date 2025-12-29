@@ -46,4 +46,8 @@ void HttpManager::slot_http_finish(RequestId id, QString res, ErrorCodes err, Mo
         // 发送信号通知指定模块，http 响应结束
         emit signal_reset_finish(id, res, err);
     }
+    if (Module::LOGINMOD == module) {
+        // 发送信号通知登录模块，http 响应结束
+        emit signal_login_finish(id, res, err);
+    }
 }

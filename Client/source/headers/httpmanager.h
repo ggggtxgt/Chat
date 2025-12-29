@@ -60,6 +60,8 @@ signals:
     void signal_register_finish(RequestId id, QString res, ErrorCodes err);
 
     void signal_reset_finish(RequestId id, QString str, ErrorCodes code);
+
+    void signal_login_finish(RequestId id, QString res, ErrorCodes code);
 };
 
 
