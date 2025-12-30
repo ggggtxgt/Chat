@@ -10,6 +10,7 @@
 
 #include <QDialog>
 
+#include "global.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChatDialog; }
@@ -25,6 +26,11 @@ public:
 
 private:
     Ui::ChatDialog *ui;
+    ChatUIMode _mode;
+    ChatUIMode _state;
+
+private:
+    void showSearch(bool b_search = false);                                 // 显示各种列表
 };
 
 

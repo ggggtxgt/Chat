@@ -73,6 +73,13 @@ struct ServerInfo {
     int Uid;
 };
 
+// 聊天界面的模式
+enum ChatUIMode {
+    SearchMode,                 // 搜索模式
+    ChatMode,                   // 聊天模式
+    ContactMode,                // 联系模式
+};
+
 // 使用 md5 对密码进行加密
 extern QString md5Encrypt(const QString &input);
 

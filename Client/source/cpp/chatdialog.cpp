@@ -4,7 +4,7 @@
 #include <QAction>
 
 ChatDialog::ChatDialog(QWidget *parent) :
-        QDialog(parent), ui(new Ui::ChatDialog) {
+        QDialog(parent), ui(new Ui::ChatDialog), _mode(ChatUIMode::ChatMode), _state(ChatUIMode::ChatMode) {
     ui->setupUi(this);
     ui->add_btn->SetState("normal", "hover", "press");
     ui->search_edit->SetMaxLength(15);
@@ -39,10 +39,30 @@ ChatDialog::ChatDialog(QWidget *parent) :
         clearAction->setIcon(QIcon(":/img/close_transparent.png"));
         ui->search_edit->clearFocus();
         // 清除按钮被按下则不需要搜索框
-        // ShowSearch(false);
+        showSearch(false);
     });
+    showSearch(false);
 }
 
 ChatDialog::~ChatDialog() {
     delete ui;
+}
+
+void ChatDialog::showSearch(bool b_search) {
+    if (b_search) {
+        ui->chat_user_list->hide();
+        ui->con_user_list->hide();
+        ui->search_list->show();
+        _mode = ChatUIMode::SearchMode;
+    } else if (ChatUIMode::ChatMode == _state) {
+        ui->chat_user_list->show();
+        ui->con_user_list->hide();
+        ui->search_list->hide();
+        _mode = ChatUIMode::ChatMode;
+    } else if (ChatUIMode::ContactMode == _state) {
+        ui->chat_user_list->hide();
+        ui->con_user_list->show();
+        ui->search_list->hide();
+        _mode = ChatUIMode::ContactMode;
+    }
 }
