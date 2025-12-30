@@ -1,6 +1,8 @@
 #ifndef GATESERVER_CONFIGMANAGER_H
 #define GATESERVER_CONFIGMANAGER_H
 
+#include <map>
+
 #include "const.h"
 
 #include <boost/filesystem.hpp>

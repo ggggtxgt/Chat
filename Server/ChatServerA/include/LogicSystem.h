@@ -17,7 +17,7 @@
 
 typedef std::function<void(std::shared_ptr<CSession>, const short &msg_id, const std::string &msg_data)> FunCallBack;
 
-class LogicSystem {
+class LogicSystem : public Singleton<LogicSystem> {
     friend class Singleton<LogicSystem>;
 
 public:

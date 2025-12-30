@@ -3,6 +3,7 @@
 
 #include "Const.h"
 #include "MysqlDao.h"
+#include "Singleton.h"
 
 class MysqlManager : public Singleton<MysqlManager> {
     friend class Singleton<MysqlManager>;

@@ -6,9 +6,9 @@
 #include <json/reader.h>
 
 #include "Glog.h"
-// #include "CServer.h"
+#include "CServer.h"
 #include "CSession.h"
-// #include "LogicSystem.h"
+#include "LogicSystem.h"
 
 CSession::CSession(boost::asio::io_context &io_context, CServer *server) : _socket(io_context), _server(server),
                                                                            _b_close(false), _b_head_parse(false) {
@@ -74,14 +74,14 @@ void CSession::AsyncReadBody(int total_len) {
                           if (ec) {
                               LOG(INFO) << "handle read failed, error is " << ec.what();
                               Close();
-                              // _server->ClearSession(_uuid);
+                               _server->ClearSession(_uuid);
                               return;
                           }
                           if (bytes_transfered < total_len) {
                               LOG(INFO) << "read length not match, read [" << bytes_transfered << "] , total ["
                                         << total_len << "]";
                               Close();
-                              // _server->ClearSession(_uuid);
+                               _server->ClearSession(_uuid);
                               return;
                           }
                           memcpy(_recv_msg_node->_data, _data, bytes_transfered);
@@ -89,7 +89,7 @@ void CSession::AsyncReadBody(int total_len) {
                           _recv_msg_node->_data[_recv_msg_node->_total_len] = '\0';
                           LOG(INFO) << "receive data is " << _recv_msg_node->_data;
                           // 此处将消息投递到逻辑队列中
-                          // LogicSystem::GetInstance()->PostMsgToQue(std::make_shared<LogicNode>(shared_from_this(), _recv_msg_node));
+                           LogicSystem::GetInstance()->PostMsgToQueue(std::make_shared<LogicNode>(shared_from_this(), _recv_msg_node));
                           // 继续监听头部接受事件
                           AsyncReadHead(HEAD_TOTAL_LEN);
                       }
@@ -106,14 +106,14 @@ void CSession::AsyncReadHead(int total_len) {
             if (ec) {
                 LOG(INFO) << "handle read failed, error is " << ec.what();
                 Close();
-                // _server->ClearSession(_uuid);
+                 _server->ClearSession(_uuid);
                 return;
             }
             if (bytes_transfered < HEAD_TOTAL_LEN) {
                 LOG(INFO) << "read length not match, read [" << bytes_transfered << "] , total ["
                           << HEAD_TOTAL_LEN << "]";
                 Close();
-                // _server->ClearSession(_uuid);
+                 _server->ClearSession(_uuid);
                 return;
             }
             _recv_head_node->Clear();
@@ -127,7 +127,7 @@ void CSession::AsyncReadHead(int total_len) {
             // id非法
             if (msg_id > MAX_LENGTH) {
                 LOG(INFO) << "invalid msg_id is " << msg_id;
-                // _server->ClearSession(_uuid);
+                 _server->ClearSession(_uuid);
                 return;
             }
             short msg_len = 0;
@@ -138,7 +138,7 @@ void CSession::AsyncReadHead(int total_len) {
             // id非法
             if (msg_len > MAX_LENGTH) {
                 LOG(INFO) << "invalid data length is " << msg_len;
-                // _server->ClearSession(_uuid);
+                 _server->ClearSession(_uuid);
                 return;
             }
             _recv_msg_node = std::make_shared<RecvNode>(msg_len, msg_id);
@@ -165,7 +165,7 @@ void CSession::HandleWrite(const boost::system::error_code &error, std::shared_p
         } else {
             LOG(INFO) << "handle write failed, error is " << error.what();
             Close();
-            // _server->ClearSession(_uuid);
+             _server->ClearSession(_uuid);
         }
     }
     catch (std::exception &e) {
