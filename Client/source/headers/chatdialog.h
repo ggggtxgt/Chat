@@ -32,6 +32,10 @@ private:
 
 private:
     void showSearch(bool b_search = false);                                 // 显示各种列表
+
+private slots:
+
+    void slot_loading_chat_user();                                          // 用户列表加载更多用户
 };
 
 

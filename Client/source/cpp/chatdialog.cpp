@@ -1,4 +1,5 @@
 #include "chatdialog.h"
+#include "loadingdialog.h"
 #include "chatuserwidget.h"
 #include "../forms/ui_chatdialog.h"
 
@@ -46,6 +47,8 @@ ChatDialog::ChatDialog(QWidget *parent) :
     });
     showSearch(false);
 
+    // 连接[加载更多用户列表]信号和槽
+    connect(ui->chat_user_list, &ChatUserList::signal_loading_chat_user, this, &ChatDialog::slot_loading_chat_user);
     AddChatUserList();
 }
 
@@ -117,4 +120,18 @@ void ChatDialog::AddChatUserList() {
         ui->chat_user_list->addItem(item);
         ui->chat_user_list->setItemWidget(item, chat_user_wid);
     }
+}
+
+void ChatDialog::slot_loading_chat_user() {
+    if (_b_loading) { return; }
+
+    _b_loading = true;
+    LoadingDialog *loadingDialog = new LoadingDialog(this);
+    loadingDialog->setModal(true);  // 设置为模态
+    loadingDialog->show();
+    // qDebug() << "add new data to list...";
+    AddChatUserList();
+    // 加载完成之后关闭对话框
+    loadingDialog->deleteLater();
+    _b_loading = false;
 }
