@@ -7,6 +7,8 @@
 #include <QApplication>
 
 int main(int argc, char *argv[]) {
+    // 添加Qt插件目录的路径，使其正确处理 jpg图片
+    QApplication::addLibraryPath("D:\\application\\Qt\\5.14.2\\mingw73_64\\plugins");
     QApplication application(argc, argv);
 
     // 加载 qss 文件

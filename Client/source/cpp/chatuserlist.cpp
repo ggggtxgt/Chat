@@ -16,7 +16,7 @@ bool ChatUserList::eventFilter(QObject *watched, QEvent *event) {
         if (QEvent::Enter == event->type()) {
             // 鼠标悬浮，显示滚动条
             this->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        } else {
+        } else if (QEvent::Leave == event->type()) {
             // 鼠标离开，隐藏滚动条
             this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         }
@@ -25,7 +25,7 @@ bool ChatUserList::eventFilter(QObject *watched, QEvent *event) {
     // 检查事件是否为鼠标滚轮事件
     if (this->viewport() == watched && QEvent::Wheel == event->type()) {
         QWheelEvent *wheel = static_cast<QWheelEvent *>(event);
-        int numDegress = wheel->y() / 8;
+        int numDegress = wheel->angleDelta().y() / 8;
         int numSteps = numDegress / 15; // 计算滚动步数
         // 设置滚动幅度
         this->verticalScrollBar()->setValue(this->verticalScrollBar()->value() - numSteps);
@@ -37,7 +37,7 @@ bool ChatUserList::eventFilter(QObject *watched, QEvent *event) {
 
         if (maxScrollValue - currentValue <= 0) {
             // 已经到达底部，加载新的联系人
-            qDebug() << "load more chat user.";
+            // qDebug() << "load more chat user.";
             // 发送信号通知聊天界面加载更多聊天内容
             emit signal_loading_chat_user();
         }

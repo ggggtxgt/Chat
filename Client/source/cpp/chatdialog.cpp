@@ -1,7 +1,9 @@
 #include "chatdialog.h"
+#include "chatuserwidget.h"
 #include "../forms/ui_chatdialog.h"
 
 #include <QAction>
+#include <QRandomGenerator>
 
 ChatDialog::ChatDialog(QWidget *parent) :
         QDialog(parent), ui(new Ui::ChatDialog), _mode(ChatUIMode::ChatMode),
@@ -43,6 +45,8 @@ ChatDialog::ChatDialog(QWidget *parent) :
         showSearch(false);
     });
     showSearch(false);
+
+    AddChatUserList();
 }
 
 ChatDialog::~ChatDialog() {
@@ -65,5 +69,52 @@ void ChatDialog::showSearch(bool b_search) {
         ui->con_user_list->show();
         ui->search_list->hide();
         _mode = ChatUIMode::ContactMode;
+    }
+}
+
+// *************************************************************************************************
+//// 测试数据
+std::vector<QString> strs = {"hello world !",
+                             "nice to meet u",
+                             "New year，new life",
+                             "You have to love yourself",
+                             "My love is written in the wind ever since the whole world is you"};
+
+std::vector<QString> heads = {
+        ":/img/head_1.jpg",
+        ":/img/head_2.jpg",
+        ":/img/head_3.jpg",
+        ":/img/head_4.jpg",
+        ":/img/head_5.jpg"
+};
+
+std::vector<QString> names = {
+        "wm",
+        "lly",
+        "ggggtxgt",
+        "kwwl",
+        "ckel",
+        "ylck",
+        "xyon",
+        "stal"
+};
+// *************************************************************************************************
+
+void ChatDialog::AddChatUserList() {
+    // 创建QListWidgetItem，并设置自定义的widget
+    for (int i = 0; i < 13; i++) {
+        // 生成0到99之间的随机整数(从而使得头像随机、消息随机)
+        int randomValue = QRandomGenerator::global()->bounded(100);
+        int str_i = randomValue % strs.size();
+        int head_i = randomValue % heads.size();
+        int name_i = randomValue % names.size();
+
+        auto *chat_user_wid = new ChatUserWidget();
+        chat_user_wid->SetInfo(names[name_i], heads[head_i], strs[str_i]);
+        QListWidgetItem *item = new QListWidgetItem;
+        // qDebug()<<"chat_user_wid sizeHint is " << chat_user_wid->sizeHint();
+        item->setSizeHint(chat_user_wid->sizeHint());
+        ui->chat_user_list->addItem(item);
+        ui->chat_user_list->setItemWidget(item, chat_user_wid);
     }
 }

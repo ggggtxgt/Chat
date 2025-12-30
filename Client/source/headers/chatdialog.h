@@ -20,9 +20,9 @@ class ChatDialog : public QDialog {
 Q_OBJECT
 
 public:
-    explicit ChatDialog(QWidget *parent = nullptr);
-
-    ~ChatDialog() override;
+    explicit ChatDialog(QWidget *parent = nullptr);                         // 构造函数
+    ~ChatDialog() override;                                                 // 析构函数
+    void AddChatUserList();                                                 // 添加聊天界面用户列表
 
 private:
     Ui::ChatDialog *ui;
