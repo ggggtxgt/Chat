@@ -4,7 +4,8 @@
 #include <QAction>
 
 ChatDialog::ChatDialog(QWidget *parent) :
-        QDialog(parent), ui(new Ui::ChatDialog), _mode(ChatUIMode::ChatMode), _state(ChatUIMode::ChatMode) {
+        QDialog(parent), ui(new Ui::ChatDialog), _mode(ChatUIMode::ChatMode),
+        _state(ChatUIMode::ChatMode), _b_loading(false) {
     ui->setupUi(this);
     ui->add_btn->SetState("normal", "hover", "press");
     ui->search_edit->SetMaxLength(15);

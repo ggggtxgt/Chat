@@ -28,6 +28,7 @@ private:
     Ui::ChatDialog *ui;
     ChatUIMode _mode;
     ChatUIMode _state;
+    bool _b_loading;
 
 private:
     void showSearch(bool b_search = false);                                 // 显示各种列表
