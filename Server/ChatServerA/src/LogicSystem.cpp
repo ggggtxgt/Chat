@@ -73,7 +73,8 @@ void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short &m
     Json::Reader reader;
     reader.parse(msg_data, root);
     auto uid = root["uid"].asInt();
-    LOG(INFO) << "user login uid is: " << uid << " user token  is: " << root["token"].asString();
+    LOG(INFO) << "user login uid is: " << uid;
+    LOG(INFO) << "user token is: " << root["token"].asString();
     // 从状态服务器获取token匹配是否正确
     auto rsp = StatusGrpcClient::GetInstance()->Login(uid, root["token"].asString());
     Json::Value rtvalue;
@@ -83,7 +84,7 @@ void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short &m
     });
 
     rtvalue["error"] = rsp.error();
-    if (rsp.error() != ErrorCodes::Success) {return;}
+    if (rsp.error() != ErrorCodes::Success) { return; }
 
     // 内存中查询用户信息
     auto find_iter = _users.find(uid);

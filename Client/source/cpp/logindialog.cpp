@@ -204,7 +204,7 @@ void LoginDialog::slot_tcp_con_finish(bool bsuccess) {
         QJsonDocument doc(jsonObj);
         QString jsonString = doc.toJson(QJsonDocument::Indented);
         // 发送tcp请求给chat server
-        TcpManager::GetInstance()->signal_send_data(RequestId::ID_CHAT_LOGIN, jsonString);
+        emit TcpManager::GetInstance()->signal_send_data(RequestId::ID_CHAT_LOGIN, jsonString);
     } else {
         showTip(tr("网络异常"), false);
         enableBtn(true);
