@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "tcpmanager.h"
 
 // 注意 ui_xxx.h 文件的包含：如果所有文件都位于一个目录，则可以使用 #include "ui_xxx.h” 的形式
 // 如果文件位于不同的文件夹，则必须指定其位置：#include "../forms/ui_xxx.h" 的形式，否则将会出错
@@ -19,6 +20,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(_login_dialog, &LoginDialog::switchRegister, this, &MainWindow::SlotSwitchRegister);
     // 连接登录界面 [忘记密码] 信号
     connect(_login_dialog, &LoginDialog::switchReset, this, &MainWindow::SlotSwitchReset);
+    // 连接创建聊天界面信号
+    connect(TcpManager::GetInstance().get(), &TcpManager::signal_switch_chatdlg, this, &MainWindow::SlotSwitchChat);
+
+    // 测试跳转是否正确
+    emit TcpManager::GetInstance()->signal_switch_chatdlg();
 }
 
 MainWindow::~MainWindow() {
@@ -78,4 +84,14 @@ void MainWindow::SlotSwitchLogin2() {
 
     // 连接登录界面注册信号
     connect(_login_dialog, &LoginDialog::switchRegister, this, &MainWindow::SlotSwitchRegister);
+}
+
+void MainWindow::SlotSwitchChat() {
+    _chat_dialog = new ChatDialog();
+    _chat_dialog->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+    setCentralWidget(_chat_dialog);
+    _chat_dialog->show();
+    _login_dialog->hide();
+    this->setMinimumSize(QSize(1050, 900));
+    this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 }
