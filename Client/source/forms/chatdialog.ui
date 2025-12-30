@@ -232,7 +232,7 @@
           <number>9</number>
          </property>
          <item>
-          <widget class="QLineEdit" name="search_edit">
+          <widget class="CustomizeEdit" name="search_edit">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -608,6 +608,11 @@
    <class>ClickedBtn</class>
    <extends>QPushButton</extends>
    <header location="global">clickedbtn.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomizeEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">customizeedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
