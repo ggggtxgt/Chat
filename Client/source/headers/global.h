@@ -97,6 +97,12 @@ enum class ChatRole {
     Other,                      // 他人
 };
 
+struct MsgInfo {
+    QString msg_flag;           // text image file
+    QPixmap pixmap;             // 文件和图片的缩略图
+    QString content;            // 表示文件和图像的url，文本信息
+};
+
 // 使用 md5 对密码进行加密
 extern QString md5Encrypt(const QString &input);
 
