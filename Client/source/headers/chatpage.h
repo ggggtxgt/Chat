@@ -19,9 +19,11 @@ class ChatPage : public QWidget {
 Q_OBJECT
 
 public:
-    explicit ChatPage(QWidget *parent = nullptr);
+    explicit ChatPage(QWidget *parent = nullptr);                           // 构造函数
+    ~ChatPage() override;                                                   // 析构函数
 
-    ~ChatPage() override;
+protected:
+    void printEvent(QPaintEvent *event);                                    // 重写父类 QWidget 绘制函数
 
 private:
     Ui::ChatPage *ui;

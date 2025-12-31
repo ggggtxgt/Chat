@@ -21,7 +21,7 @@ public:
     ListItemType GetItemType();                                         // 获取 item 类型
 
 protected:
-    void paintEvent(QPaintEvent *event);                                // 重写绘画事件
+    virtual void paintEvent(QPaintEvent *event) override;               // 重写绘画事件
 
 private:
     ListItemType _type;

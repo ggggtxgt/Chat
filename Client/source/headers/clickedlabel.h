@@ -18,6 +18,7 @@ public:
     ClickedLabel(QWidget *parent);                                      // 构造函数
     ClickLbState GetCurState();                                         // 获取当前状态
     virtual void leaveEvent(QEvent *event) override;                    // 鼠标离开事件
+    virtual void mouseReleaseEvent(QMouseEvent *event);                 // 鼠标释放事件
     virtual void enterEvent(QEvent *event) override;                    // 鼠标进入事件
     virtual void mousePressEvent(QMouseEvent *event) override;          // 鼠标点击事件
     void SetState(QString normal = "", QString hover = "",
