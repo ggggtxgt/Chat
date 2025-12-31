@@ -92,6 +92,11 @@ enum ListItemType {
     APPLY_FRIEND_ITEM,          // 好友申请
 };
 
+enum class ChatRole {
+    Self,                       // 自己
+    Other,                      // 他人
+};
+
 // 使用 md5 对密码进行加密
 extern QString md5Encrypt(const QString &input);
 
