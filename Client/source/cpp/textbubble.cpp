@@ -21,6 +21,8 @@ TextBubble::TextBubble(ChatRole role, const QString &text, QWidget *parent) : Bu
     initStyleSheet();
 }
 
+TextBubble::~TextBubble() noexcept {}
+
 bool TextBubble::eventFilter(QObject *object, QEvent *event) {
     if (object == _text_edit && QEvent::Paint == event->type()) {
         adjustTextHeight();

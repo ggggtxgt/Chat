@@ -13,11 +13,11 @@
 
 #include "bubbleframe.h"
 
-class TextBubble : BubbleFrame {
+class TextBubble : public BubbleFrame {
 Q_OBJECT
 
 public:
-    TextBubble(ChatRole role, const QString &text, QWidget *parent);            // 构造函数
+    TextBubble(ChatRole role, const QString &text, QWidget *parent = nullptr);  // 构造函数
     ~TextBubble();                                                              // 析构函数
 
 protected:
