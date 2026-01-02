@@ -25,6 +25,8 @@ public:
     void SetUid(int uid);                                   // 设置 uid
     void SetName(QString name);                             // 设置名称
     void SetToken(QString token);                           // 设置 token
+    int GetUid();                                           // 获取 Uid
+    QString GetName();                                      // 获取名称
 
 private:
     UserManager();
