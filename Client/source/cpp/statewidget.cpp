@@ -11,6 +11,8 @@ StateWidget::StateWidget(QWidget *parent) : QWidget(parent), _cur_state(ClickLbS
     AddRedPoint();
 }
 
+StateWidget::~StateWidget() noexcept {}
+
 void StateWidget::paintEvent(QPaintEvent *event) {
     QStyleOption option;
     option.init(this);
@@ -57,7 +59,7 @@ void StateWidget::mouseReleaseEvent(QMouseEvent *event) {
     QWidget::mousePressEvent(event);
 }
 
-void StateWidget::enterEvent(QMouseEvent *event) {
+void StateWidget::enterEvent(QEvent *event) {
     if (ClickLbState::Normal == _cur_state) {
         setProperty("state", _normal_hover);
         repolish(this);
@@ -70,7 +72,7 @@ void StateWidget::enterEvent(QMouseEvent *event) {
     QWidget::enterEvent(event);
 }
 
-void StateWidget::leaveEvent(QMouseEvent *event) {
+void StateWidget::leaveEvent(QEvent *event) {
     if (ClickLbState::Normal == _cur_state) {
         setProperty("state", _normal);
         repolish(this);

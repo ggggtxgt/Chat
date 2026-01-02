@@ -274,3 +274,57 @@ LoadingDlg{
 #chat_area{
     border: none;
 }
+
+#chat_user_name{
+    color:rgb(153,153,153);
+    font-size: 14px;
+    font-family: "Microsoft YaHei";
+}
+
+#side_chat_lb[state='normal']{
+    border-image: url(:/img/chat_icon.png);
+}
+
+#side_chat_lb[state='hover']{
+    border-image: url(:/img/chat_icon_hover.png);
+}
+
+#side_chat_lb[state='pressed']{
+    border-image: url(:/img/chat_icon_press.png);
+}
+
+#side_chat_lb[state='selected_normal']{
+    border-image: url(:/img/chat_icon_press.png);
+}
+
+#side_chat_lb[state='selected_hover']{
+    border-image: url(:/img/chat_icon_press.png);
+}
+
+#side_chat_lb[state='selected_pressed']{
+    border-image: url(:/img/chat_icon_press.png);
+}
+
+#side_contact_lb[state='normal']{
+    border-image: url(:/img/contact_list.png);
+}
+
+#side_contact_lb[state='hover']{
+    border-image: url(:/img/contact_list_hover.png);
+}
+
+#side_contact_lb[state='pressed']{
+    border-image: url(:/img/contact_list_press.png);
+}
+
+#side_contact_lb[state='selected_normal']{
+    border-image: url(:/img/contact_list_press.png);
+}
+
+#side_contact_lb[state='selected_hover']{
+    border-image: url(:/img/contact_list_press.png);
+}
+
+#side_contact_lb[state='selected_pressed']{
+    border-image: url(:/img/contact_list_press.png);
+}
