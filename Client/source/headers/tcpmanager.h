@@ -9,6 +9,7 @@
 #define CLIENT_TCPMANAGER_H
 
 #include "global.h"
+#include "userdata.h"
 #include "singleton.h"
 
 #include <functional>
@@ -47,6 +48,7 @@ signals:
     void signal_login_failed(int);                              // 登录失败
     void signal_con_success(bool b_success);                    // 连接成功
     void signal_send_data(RequestId id, QString data);          // 发送信息
+    void signal_user_search(std::shared_ptr<SearchInfo>);       // 按下确认搜索按钮
 
 public slots:
 
