@@ -122,7 +122,7 @@ std::vector<QString> heads = {
 
 std::vector<QString> names = {
         "wm",
-        "lly",
+        "lyy",
         "ggggtxgt",
         "kwwl",
         "ckel",

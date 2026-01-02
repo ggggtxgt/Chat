@@ -40,8 +40,20 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::Network
 )
 
-# 复制config.ini到输出目录
 if(WIN32)
+    # 在配置阶段就复制资源
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/res/static)
+        file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res/static/
+                DESTINATION ${CMAKE_BINARY_DIR}/static
+                FILES_MATCHING PATTERN "*")
+        message(STATUS "复制 static 目录到构建目录")
+    else()
+        message(WARNING "目录不存在: ${CMAKE_CURRENT_SOURCE_DIR}/res/static")
+        # 创建空目录避免构建失败
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/static)
+    endif()
+
+    # 复制 config.ini 到输出目标目录
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_CURRENT_SOURCE_DIR}/config.ini"
