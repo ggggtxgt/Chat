@@ -25,6 +25,10 @@ public:
     ~ChatDialog() override;                                                 // 析构函数
     void AddChatUserList();                                                 // 添加聊天界面用户列表
     void ClearLabelState(StateWidget *widget);                              // 清空标签状态
+
+protected:
+    bool eventFilter(QObject *watched, QEvent *event);                      // 重写事件过滤函数
+    void handleGlobalMousePress(QMouseEvent *event);                        // 重写鼠标按下事件
 private:
     Ui::ChatDialog *ui;
     ChatUIMode _mode;
