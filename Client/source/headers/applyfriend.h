@@ -3,6 +3,7 @@
 
 #include <QDialog>
 
+#include "userdata.h"
 #include "friendlabel.h"
 #include "clickedlabel.h"
 
@@ -24,6 +25,8 @@ public:
 
     bool eventFilter(QObject *obj, QEvent *event);
 
+    void SetSearchInfo(std::shared_ptr<SearchInfo> si);
+
 private:
     void resetLabels();
 
@@ -40,6 +43,8 @@ private:
 
     std::vector<QString> _tip_data;
     QPoint _tip_cur_point;
+    std::shared_ptr<SearchInfo> _si;
+
 public slots:
 
     // 显示更多label标签

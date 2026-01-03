@@ -1,3 +1,4 @@
+#include "applyfriend.h"
 #include "findsuccessdlg.h"
 #include "../forms/ui_findsuccessdlg.h"
 
@@ -33,5 +34,10 @@ void FindSuccessDlg::SetSearchInfo(std::shared_ptr<SearchInfo> si) {
 }
 
 void FindSuccessDlg::on_add_friend_btn_clicked() {
-    //@todo 弹出添加好友界面
+    this->hide();
+    //弹出加好友界面
+    auto applyFriend = new ApplyFriend(_parent);
+    applyFriend->SetSearchInfo(_si);
+    applyFriend->setModal(true);
+    applyFriend->show();
 }
