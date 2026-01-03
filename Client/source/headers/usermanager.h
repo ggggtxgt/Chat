@@ -12,6 +12,8 @@
 
 #include <QObject>
 
+#include "global.h"
+#include "userdata.h"
 #include "singleton.h"
 
 class UserManager : public QObject, public Singleton<UserManager>,
@@ -27,13 +29,18 @@ public:
     void SetToken(QString token);                           // 设置 token
     int GetUid();                                           // 获取 Uid
     QString GetName();                                      // 获取名称
-
+    std::vector<std::shared_ptr<FriendInfo>> GetConListPerPage();
+    bool IsLoadChatFin();
+    void UpdateContactLoadedCount();
 private:
     UserManager();
 
     int _uid;
     QString _name;
     QString _token;
+    int _chat_loaded;
+    int _contact_loaded;
+    std::vector<std::shared_ptr<FriendInfo>> _friend_list;
 };
 
 

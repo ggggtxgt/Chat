@@ -35,23 +35,5 @@
         <file>../img/visible.png</file>
         <file>../img/visible_hover.png</file>
         <file>../img/xixi.png</file>
-        <file>../img/add_friend.png</file>
-        <file>../img/female.png</file>
-        <file>../img/male.png</file>
-        <file>../img/msg_chat_hover.png</file>
-        <file>../img/msg_chat_normal.png</file>
-        <file>../img/msg_chat_press.png</file>
-        <file>../img/red_point.png</file>
-        <file>../img/settings.png</file>
-        <file>../img/settings_hover.png</file>
-        <file>../img/settings_press.png</file>
-        <file>../img/settings_select_hover.png</file>
-        <file>../img/settings_select_press.png</file>
-        <file>../img/video_chat_hover.png</file>
-        <file>../img/video_chat_normal.png</file>
-        <file>../img/video_chat_press.png</file>
-        <file>../img/voice_chat_hover.png</file>
-        <file>../img/voice_chat_normal.png</file>
-        <file>../img/voice_chat_press.png</file>
     </qresource>
 </RCC>

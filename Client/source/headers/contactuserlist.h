@@ -10,8 +10,7 @@
 #include <QWheelEvent>
 
 #include "userdata.h"
-
-class ConUserItem;
+#include "conuseritem.h"
 
 class ContactUserList : public QListWidget {
 Q_OBJECT
@@ -39,7 +38,7 @@ signals:
 
     void sig_switch_apply_friend_page();
 
-//    void sig_switch_friend_info_page(std::shared_ptr<UserInfo> user_info);
+    void signal_switch_friend_info_page(std::shared_ptr<UserInfo> user_info);
 
 private:
     bool _load_pending;
