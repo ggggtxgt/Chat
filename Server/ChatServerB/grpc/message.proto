@@ -1,0 +1,59 @@
+// 指定 protocol buffers 版本
+syntax = "proto3";
+
+// 包名定义，类似于命名空间，防止命名冲突
+package message;
+
+/*
+ * 服务定义：
+ * service VarifyService: 定义一个名为 VarifyService 的 GRPC 服务；
+ * rpc GetVarifyCode: 定义一个名为 GetVarifyCode 的远程方法；
+ * (GetVarifyReq): 该方法需要一个 GetVarifyReq 类型的参数（输入）；
+ * return (GetVarifyRsp): 该方法返回一个 GetVarifyRsp 类型的结果（输出）；
+**/
+service VarifyService {
+  rpc GetVarifyCode (GetVarifyRequest) returns (GetVarifyResponse) {}
+}
+
+/* 请求消息定义：
+ * message GetVarifyRequest: 定义名为 GetVarifyRequest 的消息类型；
+ * string email = 1; 字段类型为字符串，字段名称为 email，字段编号为1；
+ * 字段编号不是字段的值，一旦使用，不应修改；
+**/
+message GetVarifyRequest {
+  string email = 1;
+}
+
+// 与上相同：响应消息定义
+message GetVarifyResponse {
+  int32 error = 1;
+  string email = 2;
+  string code = 3;
+}
+
+message GetChatServerRequest {
+  int32 uid = 1;
+}
+
+message GetChatServerResponse {
+  int32 error = 1;
+  string host = 2;
+  string port = 3;
+  string token = 4;
+}
+
+message LoginRequest{
+  int32 uid = 1;
+  string token = 2;
+}
+
+message LoginResponse {
+  int32 error = 1;
+  int32 uid = 2;
+  string token = 3;
+}
+
+service StatusService {
+  rpc GetChatServer (GetChatServerRequest) returns (GetChatServerResponse) {}
+  rpc Login(LoginRequest) returns(LoginResponse);
+}
