@@ -16,8 +16,8 @@ using grpc::Channel;
 using grpc::ClientContext;
 
 using message::StatusService;
-using message::GetChatServerRequest;
-using message::GetChatServerResponse;
+using message::GetChatServerReq;
+using message::GetChatServerRsp;
 
 class StatusConPool {
 public:
@@ -42,8 +42,8 @@ class StatusGrpcClient : public Singleton<StatusGrpcClient> {
 
 public:
     ~StatusGrpcClient() = default;                                  // 使用默认析构函数
-    GetChatServerResponse GetChatServer(int uid);                   // 获取 uid 获取服务器
-    message::LoginResponse Login(int uid, std::string token);       // 处理登录请求
+    GetChatServerRsp GetChatServer(int uid);                        // 获取 uid 获取服务器
+    message::LoginRsp Login(int uid, std::string token);            // 处理登录请求
 
 private:
     StatusGrpcClient();
