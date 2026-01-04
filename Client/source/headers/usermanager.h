@@ -32,6 +32,7 @@ public:
     std::vector<std::shared_ptr<FriendInfo>> GetConListPerPage();
     bool IsLoadChatFin();
     void UpdateContactLoadedCount();
+    std::vector<std::shared_ptr<ApplyInfo>> GetApplyList();
 private:
     UserManager();
 
@@ -41,6 +42,7 @@ private:
     int _chat_loaded;
     int _contact_loaded;
     std::vector<std::shared_ptr<FriendInfo>> _friend_list;
+    std::vector<std::shared_ptr<ApplyInfo>> _apply_list;
 };
 
 

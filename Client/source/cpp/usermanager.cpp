@@ -54,3 +54,7 @@ bool UserManager::IsLoadChatFin() {
     }
     return false;
 }
+
+std::vector<std::shared_ptr<ApplyInfo>> UserManager::GetApplyList() {
+    return _apply_list;
+}

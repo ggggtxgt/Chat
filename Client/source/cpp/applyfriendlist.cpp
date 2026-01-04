@@ -5,7 +5,7 @@
 #include "applyfriendlist.h"
 
 ApplyFriendList::ApplyFriendList(QWidget *parent) {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     // 安装事件过滤器
@@ -41,5 +41,4 @@ bool ApplyFriendList::eventFilter(QObject *watched, QEvent *event) {
         return true; // 停止事件传递
     }
     return QListWidget::eventFilter(watched, event);
-
 }

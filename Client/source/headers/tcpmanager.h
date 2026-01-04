@@ -49,7 +49,9 @@ signals:
     void signal_con_success(bool b_success);                    // 连接成功
     void signal_send_data(RequestId id, QString data);          // 发送信息
     void signal_user_search(std::shared_ptr<SearchInfo>);       // 按下确认搜索按钮
-
+    void signal_friend_apply(std::shared_ptr<AddFriendApply>);
+    void signal_add_auth_friend(std::shared_ptr<AuthInfo>);
+    void signal_auth_rsp(std::shared_ptr<AuthRsp>);
 public slots:
 
     void slot_tcp_connect(ServerInfo);                          // 建立 TCP 连接
