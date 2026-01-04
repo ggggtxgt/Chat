@@ -40,10 +40,10 @@ void StatusConPool::Close() {
     cond_.notify_all();
 }
 
-GetChatServerResponse StatusGrpcClient::GetChatServer(int uid) {
+GetChatServerRsp StatusGrpcClient::GetChatServer(int uid) {
     ClientContext context;
-    GetChatServerResponse reply;
-    GetChatServerRequest request;
+    GetChatServerRsp reply;
+    GetChatServerReq request;
     request.set_uid(uid);
 
     auto stub = pool_->GetConnection();
@@ -57,10 +57,10 @@ GetChatServerResponse StatusGrpcClient::GetChatServer(int uid) {
     }
 }
 
-message::LoginResponse StatusGrpcClient::Login(int uid, std::string token) {
+message::LoginRsp StatusGrpcClient::Login(int uid, std::string token) {
     ClientContext context;
-    message::LoginResponse reply;
-    message::LoginRequest request;
+    message::LoginRsp reply;
+    message::LoginReq request;
     request.set_uid(uid);
     request.set_token(token);
 

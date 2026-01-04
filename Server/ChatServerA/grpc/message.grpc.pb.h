@@ -6,7 +6,7 @@
 #ifndef GRPC_grpc_2fmessage_2eproto__INCLUDED
 #define GRPC_grpc_2fmessage_2eproto__INCLUDED
 
-#include "grpc/message.pb.h"
+#include "message.pb.h"
 
 #include <functional>
 #include <grpc/impl/codegen/port_platform.h>
