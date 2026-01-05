@@ -1,4 +1,5 @@
 #include "Const.h"
+#include "RedisManager.h"
 #include "ConfigManager.h"
 #include "StatusServiceImpl.h"
 
@@ -14,8 +15,8 @@ std::string generate_unique_string() {
     return unique_string;
 }
 
-Status StatusServiceImpl::GetChatServer(grpc::ServerContext *context, const message::GetChatServerRequest *request,
-                                        message::GetChatServerResponse *reply) {
+Status StatusServiceImpl::GetChatServer(grpc::ServerContext *context, const message::GetChatServerReq *request,
+                                        message::GetChatServerRsp *reply) {
     std::string prefix("status server has received :  ");
     const auto &server = getChatServer();
     reply->set_host(server.host);
@@ -28,25 +29,49 @@ Status StatusServiceImpl::GetChatServer(grpc::ServerContext *context, const mess
 
 StatusServiceImpl::StatusServiceImpl() {
     auto &cfg = ConfigManager::Inst();
-    ChatServer server;
-    server.port = cfg["ChatServerA"]["Port"];
-    server.host = cfg["ChatServerA"]["Host"];
-    server.con_count = 0;
-    server.name = cfg["ChatServerA"]["Name"];
-    _servers[server.name] = server;
+    auto server_list = cfg["chatservers"]["Name"];
 
-    server.port = cfg["ChatServerB"]["Port"];
-    server.host = cfg["ChatServerB"]["Host"];
-    server.name = cfg["ChatServerB"]["Name"];
-    server.con_count = 0;
-    _servers[server.name] = server;
+    std::vector<std::string> words;
+
+    std::stringstream ss(server_list);
+    std::string word;
+    while (std::getline(ss, word, ',')) {
+        words.push_back(word);
+    }
+    for (auto &word: words) {
+        if (cfg[word]["Name"].empty()) {
+            continue;
+        }
+        ChatServer server;
+        server.port = cfg[word]["Port"];
+        server.host = cfg[word]["Host"];
+        server.name = cfg[word]["Name"];
+        _servers[server.name] = server;
+    }
 }
 
 ChatServer StatusServiceImpl::getChatServer() {
     std::lock_guard<std::mutex> guard(_server_mtx);
     auto minServer = _servers.begin()->second;
-    // 使用 for 循环，找出连接数最少的聊天服务器
-    for (const auto &server: _servers) {
+    auto count_str = RedisManager::GetInstance()->HGet(LOGIN_COUNT, minServer.name);
+    if (count_str.empty()) {
+        // 不存在则默认设置为最大
+        minServer.con_count = INT_MAX;
+    } else {
+        minServer.con_count = std::stoi(count_str);
+    }
+    // 使用范围基于for循环
+    for (auto &server: _servers) {
+
+        if (server.second.name == minServer.name) {
+            continue;
+        }
+        auto count_str = RedisManager::GetInstance()->HGet(LOGIN_COUNT, server.second.name);
+        if (count_str.empty()) {
+            server.second.con_count = INT_MAX;
+        } else {
+            server.second.con_count = std::stoi(count_str);
+        }
         if (server.second.con_count < minServer.con_count) {
             minServer = server.second;
         }
@@ -55,16 +80,19 @@ ChatServer StatusServiceImpl::getChatServer() {
 }
 
 Status StatusServiceImpl::Login(grpc::ServerContext *context,
-                                const message::LoginRequest *request, message::LoginResponse *reply) {
+                                const message::LoginReq *request, message::LoginRsp *reply) {
     auto uid = request->uid();
     auto token = request->token();
-    std::lock_guard<std::mutex> guard(_token_mtx);
-    auto iter = _tokens.find(uid);
-    if (_tokens.end() == iter) {
+
+    std::string uid_str = std::to_string(uid);
+    std::string token_key = USERTOKENPREFIX + uid_str;
+    std::string token_value = "";
+    bool success = RedisManager::GetInstance()->Get(token_key, token_value);
+    if (success) {
         reply->set_error(ErrorCodes::UidInvalid);
         return Status::OK;
     }
-    if (iter->second != token) {
+    if (token_value != token) {
         reply->set_error(ErrorCodes::TokenInvalid);
         return Status::OK;
     }
@@ -75,6 +103,7 @@ Status StatusServiceImpl::Login(grpc::ServerContext *context,
 }
 
 void StatusServiceImpl::insertToken(int uid, std::string token) {
-    std::lock_guard<std::mutex> guard(_token_mtx);
-    _tokens[uid] = token;
+    std::string uid_str = std::to_string(uid);
+    std::string token_key = USERTOKENPREFIX + uid_str;
+    RedisManager::GetInstance()->Set(token_key, token);
 }

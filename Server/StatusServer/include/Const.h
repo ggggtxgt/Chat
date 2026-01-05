@@ -11,6 +11,13 @@
 
 #include "Singleton.h"
 
+#define USERIPPREFIX  "uip_"
+#define USERTOKENPREFIX  "utoken_"
+#define IPCOUNTPREFIX  "ipcount_"
+#define USER_BASE_INFO "ubaseinfo_"
+#define LOGIN_COUNT  "logincount"
+#define LOCK_COUNT "lockcount"
+
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
 namespace net = boost::asio;            // from <boost/asio.hpp>
@@ -31,9 +38,6 @@ enum ErrorCodes {
     TokenInvalid = 1010,        // Token 错误
     UidInvalid = 1011           // uid 错误
 };
-
-// 添加前缀
-#define CODEPREFIX "code_"
 
 class Defer {
 public:
