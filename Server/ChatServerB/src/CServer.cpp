@@ -2,6 +2,7 @@
 
 #include "Glog.h"
 #include "CServer.h"
+#include "UserManager.h"
 #include "AsioIOServicePool.h"
 
 CServer::CServer(boost::asio::io_context &io_context, short port) : _io_context(io_context), _port(port),
@@ -17,7 +18,7 @@ void CServer::HandleAccept(std::shared_ptr<CSession> new_session, const boost::s
     if (!error) {
         new_session->Start();
         std::lock_guard<std::mutex> lock(_mutex);
-        _sessions.insert(std::make_pair(new_session->GetUuid(), new_session));
+        _sessions.insert(std::make_pair(new_session->GetSessionId(), new_session));
     } else {
         LOG(ERROR) << "session accept failed, error is: " << error.what();
     }
@@ -31,7 +32,14 @@ void CServer::StartAccept() {
                            std::bind(&CServer::HandleAccept, this, new_session, std::placeholders::_1));
 }
 
-void CServer::ClearSession(std::string uuid) {
-    std::lock_guard<std::mutex> lock(_mutex);
-    _sessions.erase(uuid);
+void CServer::ClearSession(std::string session_id) {
+    if (_sessions.find(session_id) != _sessions.end()) {
+        auto uid = _sessions[session_id]->GetUserId();
+        // 移除用户和 session 的关联
+        UserManager::GetInstance()->RmvUserSession(uid, session_id);
+    }
+    {
+        std::lock_guard<std::mutex> lock(_mutex);
+        _sessions.erase(session_id);
+    }
 }

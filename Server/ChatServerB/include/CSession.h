@@ -28,7 +28,9 @@ public:
     CSession(boost::asio::io_context &, CServer *);                     // 构造函数
     ~CSession();                                                        // 析构函数
     tcp::socket &GetSocket();                                           // 返回当前会话关联的 TCP socket 引用
-    std::string &GetUuid();                                             // 返回当前会话的唯一标识符（UUID）
+    std::string &GetSessionId();                                        // 返回当前会话的唯一标识符（UUID）
+    void SetUserId(int uid);
+    int GetUserId();
     void Start();                                                       // 启动会话，开始异步读取消息头部
     void Send(char *msg, short max_length, short msgid);                // 发送消息到客户端--字符数组
     void Send(std::string msg, short msgid);                            // 发送消息到客户端--字符串
@@ -50,7 +52,7 @@ private:
 private:
     bool _b_close;                                      // 标记会话是否已经关闭
     CServer *_server;                                   // 指向所属服务器的指针，用于会话管理和清理
-    std::string _uuid;                                  // 会话的唯一标识符（UUID 字符串）
+    std::string _session_id;
     bool _b_head_parse;                                 // 标记是否已经解析了消息头部
     tcp::socket _socket;                                // boost中的socket对象
     std::mutex _send_lock;                              // 发送队列的互斥锁
@@ -58,6 +60,7 @@ private:
     std::shared_ptr<MsgNode> _recv_head_node;           // 收到的头部结构
     std::shared_ptr<RecvNode> _recv_msg_node;           // 收到的消息结构
     std::queue<std::shared_ptr<SendNode>> _send_que;    // 发送队列
+    int _user_uid;
 };
 
 class LogicNode {
