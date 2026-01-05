@@ -1,3 +1,4 @@
+#include "Glog.h"
 #include "Const.h"
 #include "RedisManager.h"
 #include "ConfigManager.h"
@@ -29,7 +30,7 @@ Status StatusServiceImpl::GetChatServer(grpc::ServerContext *context, const mess
 
 StatusServiceImpl::StatusServiceImpl() {
     auto &cfg = ConfigManager::Inst();
-    auto server_list = cfg["chatservers"]["Name"];
+    auto server_list = cfg["ChatServers"]["Name"];
 
     std::vector<std::string> words;
 

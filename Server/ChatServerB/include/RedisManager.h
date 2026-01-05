@@ -26,6 +26,7 @@ public:
     bool Del(const std::string &key);                                           // 删除指定的 key
     bool ExistsKey(const std::string &key);                                     // 检查指定的 key 是否存在
     void Close();                                                               // 关闭 Redis 连接，释放资源
+    bool HDel(const std::string& key, const std::string& field);
 
 private:
     RedisManager();

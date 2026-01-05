@@ -46,7 +46,7 @@ LogicSystem::LogicSystem() {
             return true;
         }
         auto email = src_root["email"].asString();
-        GetVarifyResponse response = VerifyGrpcClient::GetInstance()->GetVarifyCode(email);
+        GetVarifyRsp response = VerifyGrpcClient::GetInstance()->GetVarifyCode(email);
         LOG(INFO) << "email is: " << email;
         root["error"] = response.error();
         root["email"] = src_root["email"];

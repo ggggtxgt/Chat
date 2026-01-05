@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(TcpManager::GetInstance().get(), &TcpManager::signal_switch_chatdlg, this, &MainWindow::SlotSwitchChat);
 
     // 测试跳转是否正确
-    emit TcpManager::GetInstance()->signal_switch_chatdlg();
+    // emit TcpManager::GetInstance()->signal_switch_chatdlg();
 }
 
 MainWindow::~MainWindow() {

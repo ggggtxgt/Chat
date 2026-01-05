@@ -337,3 +337,28 @@ bool RedisManager::ExistsKey(const std::string &key) {
 void RedisManager::Close() {
     _conn_pool->Close();
 }
+
+bool RedisManager::HDel(const std::string &key, const std::string &field) {
+    auto connect = _conn_pool->GetConnection();
+    if (connect == nullptr) {
+        return false;
+    }
+
+    Defer defer([&connect, this]() {
+        _conn_pool->ReturnConnection(connect);
+    });
+
+    redisReply *reply = (redisReply *) redisCommand(connect, "HDEL %s %s", key.c_str(), field.c_str());
+    if (reply == nullptr) {
+        LOG(ERROR) << "HDEL command failed" << std::endl;
+        return false;
+    }
+
+    bool success = false;
+    if (reply->type == REDIS_REPLY_INTEGER) {
+        success = reply->integer > 0;
+    }
+
+    freeReplyObject(reply);
+    return success;
+}

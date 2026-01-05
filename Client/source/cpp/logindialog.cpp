@@ -130,7 +130,7 @@ bool LoginDialog::checkPwdValid() {
         return false;
     }
     // ^[a-zA-Z0-9!@#$%^&*]{6,15}$ 密码长度至少6，可以是字母、数字和特定的特殊字符
-    QRegularExpression regExp("^[a-zA-Z0-9!@#$%^&*]{6,15}$");
+    QRegularExpression regExp("^[a-zA-Z0-9!@#$%^&*.]{6,15}$");
     bool match = regExp.match(pwd).hasMatch();
     if (!match) {
         // 提示字符非法

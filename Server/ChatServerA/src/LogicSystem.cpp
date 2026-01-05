@@ -127,6 +127,7 @@ void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short &m
     }
     count++;
 
+    // 将登录数量写入 redis
     auto count_str = std::to_string(count);
     RedisManager::GetInstance()->HSet(LOGIN_COUNT, server_name, count_str);
 

@@ -55,7 +55,7 @@ void MysqlConnPool::CheckConnection() {
             stmt->executeQuery("SELECT 1");
 
             con->_last_time = timestamp;
-            LOG(INFO) << "execute timer alive query, cur is " << timestamp;
+            // LOG(INFO) << "execute timer alive query, cur is " << timestamp;
         }
         catch (sql::SQLException &exception) {
             LOG(ERROR) << "Error keeping connection alive: " << exception.what();

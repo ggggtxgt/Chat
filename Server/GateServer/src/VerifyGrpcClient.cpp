@@ -52,10 +52,10 @@ void RPCConnPool::ReturnConnection(std::unique_ptr<VarifyService::Stub> connecti
     cond_.notify_one();
 }
 
-GetVarifyResponse VerifyGrpcClient::GetVarifyCode(std::string email) {
+GetVarifyRsp VerifyGrpcClient::GetVarifyCode(std::string email) {
     ClientContext context;
-    GetVarifyRequest request;
-    GetVarifyResponse response;
+    GetVarifyReq request;
+    GetVarifyRsp response;
     request.set_email(email);
 
     auto stub = pool_->GetConnection();

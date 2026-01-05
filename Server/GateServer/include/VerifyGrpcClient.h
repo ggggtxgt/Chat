@@ -14,8 +14,8 @@ using grpc::Channel;
 using grpc::ClientContext;
 
 using message::VarifyService;
-using message::GetVarifyRequest;
-using message::GetVarifyResponse;
+using message::GetVarifyReq;
+using message::GetVarifyRsp;
 
 class RPCConnPool {
 public:
@@ -41,7 +41,7 @@ class VerifyGrpcClient : public Singleton<VerifyGrpcClient> {
     friend class Singleton<VerifyGrpcClient>;
 
 public:
-    GetVarifyResponse GetVarifyCode(std::string email);
+    GetVarifyRsp GetVarifyCode(std::string email);
 
 private:
     VerifyGrpcClient();
