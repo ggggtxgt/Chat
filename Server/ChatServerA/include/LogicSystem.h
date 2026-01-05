@@ -29,6 +29,7 @@ private:
     void RegisterCallBacks();                                       //
     void LoginHandler(std::shared_ptr<CSession>,
                       const short &, const std::string &);          //
+    bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo> &userinfo);
 
 private:
     bool _b_stop;
@@ -37,7 +38,6 @@ private:
     std::condition_variable _consume;
     std::map<short, FunCallBack> _func_callbacks;
     std::queue<std::shared_ptr<LogicNode>> _msg_que;
-    std::unordered_map<int, std::shared_ptr<UserInfo>> _users;
 };
 
 

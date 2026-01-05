@@ -31,6 +31,13 @@ struct SectionInfo {
         return _section_datas[key];
     }
 
+    std::string GetValue(const std::string &key) {
+        if (_section_datas.find(key) == _section_datas.end()) {
+            return "";
+        }
+        return _section_datas[key];
+    }
+
     std::map<std::string, std::string> _section_datas;
 };
 
@@ -60,6 +67,8 @@ public:
         _config_map = src._config_map;
         return *this;
     }
+
+    std::string GetValue(const std::string &section, const std::string &key);
 
 private:
     ConfigManager();
