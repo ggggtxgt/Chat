@@ -69,9 +69,10 @@ void LogicSystem::DealMsg() {
 void LogicSystem::RegisterCallBacks() {
     _func_callbacks[MSG_CHAT_LOGIN] = std::bind(&LogicSystem::LoginHandler, this,
                                                 std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-    _func_callbacks[ID_SEARCH_USER_REQ] = std::bind(&LogicSystem::SearchInfo, this,
-                                                    std::placeholders::_1, std::placeholders::_2,
-                                                    std::placeholders::_3);
+    _func_callbacks[ID_SEARCH_USER_REQ] = std::bind(&LogicSystem::SearchInfo, this, std::placeholders::_1,
+                                                    std::placeholders::_2, std::placeholders::_3);
+    _func_callbacks[ID_ADD_FRIEND_REQ] = std::bind(&LogicSystem::AddFriendApply, this, std::placeholders::_1,
+                                                    std::placeholders::_2, std::placeholders::_3);
 }
 
 void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short &msg_id, const std::string &msg_data) {
