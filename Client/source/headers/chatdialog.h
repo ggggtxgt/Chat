@@ -11,6 +11,7 @@
 #include <QDialog>
 
 #include "global.h"
+#include "userdata.h"
 #include "statewidget.h"
 
 QT_BEGIN_NAMESPACE
@@ -46,6 +47,9 @@ private slots:
     void slot_side_chat();                                                  // 侧边栏聊天图标
     void slot_side_contact();                                               // 侧边栏联系图标
     void slot_text_changed(const QString &str);                             //
+
+public slots:
+    void slot_apply_friend(std::shared_ptr<AddFriendApply> apply);
 };
 
 

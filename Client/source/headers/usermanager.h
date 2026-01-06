@@ -33,6 +33,9 @@ public:
     bool IsLoadChatFin();
     void UpdateContactLoadedCount();
     std::vector<std::shared_ptr<ApplyInfo>> GetApplyList();
+    void AddApplyList(std::shared_ptr<ApplyInfo> app);
+    bool AlreadyApply(int uid);
+
 private:
     UserManager();
 

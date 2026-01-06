@@ -58,3 +58,16 @@ bool UserManager::IsLoadChatFin() {
 std::vector<std::shared_ptr<ApplyInfo>> UserManager::GetApplyList() {
     return _apply_list;
 }
+
+void UserManager::AddApplyList(std::shared_ptr<ApplyInfo> app) {
+    _apply_list.push_back(app);
+}
+
+bool UserManager::AlreadyApply(int uid) {
+    for (auto &apply: _apply_list) {
+        if (apply->_uid == uid) {
+            return true;
+        }
+    }
+    return false;
+}
