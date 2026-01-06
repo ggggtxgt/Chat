@@ -6,6 +6,7 @@
 #include "usermanager.h"
 #include "customizeedit.h"
 #include "loadingdialog.h"
+#include "findfaildialog.h"
 #include "findsuccessdlg.h"
 
 #include <memory>
@@ -37,6 +38,7 @@ void SearchList::CloseFindDlg() {
 }
 
 void SearchList::SetSearchEdit(QWidget *edit) {
+    _search_edit = edit;
 }
 
 void SearchList::waitPending(bool pending) {
@@ -116,6 +118,11 @@ void SearchList::slot_item_clicked(QListWidgetItem *item) {
         if (_send_pending) {
             return;
         }
+
+        if (!_search_edit) {
+            return;
+        }
+
         waitPending(true);
         auto search_edit = dynamic_cast<CustomizeEdit *>(_search_edit);
         auto uid_str = search_edit->text();
@@ -124,7 +131,6 @@ void SearchList::slot_item_clicked(QListWidgetItem *item) {
         QJsonDocument doc(json);
         QByteArray data = doc.toJson(QJsonDocument::Compact);
         emit TcpManager::GetInstance()->signal_send_data(RequestId::ID_SEARCH_USER_REQ, data);
-
 
         return;
     }
@@ -135,9 +141,12 @@ void SearchList::slot_item_clicked(QListWidgetItem *item) {
 void SearchList::slot_user_search(std::shared_ptr<SearchInfo> si) {
     waitPending(false);
     if (si == nullptr) {
-
+        _find_dlg = std::make_shared<FindFailDialog>(this);
     } else {
-
+        // 分为两种情况：搜索结果已是朋友、未是朋友
+        // 查找是否已为好友 @todo
+        _find_dlg = std::make_shared<FindSuccessDlg>(this);
+        std::dynamic_pointer_cast<FindSuccessDlg>(_find_dlg)->SetSearchInfo(si);
     }
     _find_dlg->show();
 }
