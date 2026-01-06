@@ -152,6 +152,68 @@ void TcpManager::initHandlers() {
                                                         jsonObj["sex"].toInt(), jsonObj["icon"].toString());
         emit signal_user_search(search_info);
     });
+
+    _handlers.insert(ID_CHAT_LOGIN_RSP, [this](RequestId id, int len, QByteArray data) {
+        qDebug() << "handle id is " << id << " data is " << data;
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            qDebug() << "Failed to create QJsonDocument.";
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+
+        if (!jsonObj.contains("error")) {
+            int err = ErrorCodes::ERR_JSON;
+            qDebug() << "Login Failed, err is Json Parse Err" << err;
+            emit signal_login_failed(err);
+            return;
+        }
+
+        int err = jsonObj["error"].toInt();
+        if (err != ErrorCodes::SUCCESS) {
+            qDebug() << "Login Failed, err is " << err;
+            emit signal_login_failed(err);
+            return;
+        }
+
+        UserManager::GetInstance()->SetUid(jsonObj["uid"].toInt());
+        UserManager::GetInstance()->SetName(jsonObj["name"].toString());
+        UserManager::GetInstance()->SetToken(jsonObj["token"].toString());
+        emit signal_switch_chatdlg();
+    });
+
+    _handlers.insert(ID_ADD_FRIEND_RSP, [this](RequestId id, int len, QByteArray data) {
+        qDebug() << "handle id is " << id << " data is " << data;
+        // 将QByteArray转换为QJsonDocument
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+
+        // 检查转换是否成功
+        if (jsonDoc.isNull()) {
+            qDebug() << "Failed to create QJsonDocument.";
+            return;
+        }
+
+        QJsonObject jsonObj = jsonDoc.object();
+
+        if (!jsonObj.contains("error")) {
+            int err = ErrorCodes::ERR_JSON;
+            qDebug() << "Login Failed, err is Json Parse Err" << err;
+            emit signal_login_failed(err);
+            return;
+        }
+
+        int err = jsonObj["error"].toInt();
+        if (err != ErrorCodes::SUCCESS) {
+            qDebug() << "Login Failed, err is " << err;
+            emit signal_login_failed(err);
+            return;
+        }
+        qDebug() << "add friend success!";
+    });
 }
 
 void TcpManager::handleMessage(RequestId id, int len, QByteArray data) {

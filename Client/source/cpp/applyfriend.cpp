@@ -1,10 +1,13 @@
 #include "applyfriend.h"
 #include "usermanager.h"
 #include "friendlabel.h"
+#include "tcpmanager.h"
 #include "clickedlabel.h"
 #include "../forms/ui_applyfriend.h"
 
 #include <QScrollBar>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 ApplyFriend::ApplyFriend(QWidget *parent) : QDialog(parent), ui(new Ui::ApplyFriend), _label_point(2, 6) {
     ui->setupUi(this);
@@ -411,6 +414,32 @@ void ApplyFriend::SlotAddFirendLabelByClickTip(QString text) {
 
 void ApplyFriend::SlotApplySure() {
     qDebug() << "Slot Apply Sure called.";
+    // 发送请求逻辑
+    QJsonObject jsonObj;
+    auto uid = UserManager::GetInstance()->GetUid();
+    jsonObj["uid"] = uid;
+    auto name = ui->name_ed->text();
+    if(name.isEmpty()){
+        name = ui->name_ed->placeholderText();
+    }
+
+    jsonObj["applyname"] = name;
+
+    auto bakname = ui->back_ed->text();
+    if(bakname.isEmpty()){
+        bakname = ui->back_ed->placeholderText();
+    }
+
+    jsonObj["bakname"] = bakname;
+    jsonObj["touid"] = _si->_uid;
+
+    QJsonDocument doc(jsonObj);
+    QByteArray jsonData = doc.toJson(QJsonDocument::Compact);
+
+    // 发送tcp请求给chat server
+    emit TcpManager::GetInstance()->signal_send_data(RequestId::ID_ADD_FRIEND_REQ, jsonData);
+    this->hide();
+    deleteLater();
 }
 
 void ApplyFriend::SlotApplyCancel() {
