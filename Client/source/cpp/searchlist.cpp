@@ -3,7 +3,9 @@
 #include "tcpmanager.h"
 #include "tcpmanager.h"
 #include "adduseritem.h"
+#include "usermanager.h"
 #include "customizeedit.h"
+#include "loadingdialog.h"
 #include "findsuccessdlg.h"
 
 #include <memory>
@@ -38,6 +40,16 @@ void SearchList::SetSearchEdit(QWidget *edit) {
 }
 
 void SearchList::waitPending(bool pending) {
+    if (pending) {
+        _loadingDialog = new LoadingDialog(this);
+        _loadingDialog->setModal(true);
+        _loadingDialog->show();
+        _send_pending = pending;
+    } else {
+        _loadingDialog->hide();
+        _loadingDialog->deleteLater();
+        _send_pending = pending;
+    }
 }
 
 bool SearchList::eventFilter(QObject *watched, QEvent *event) {
@@ -100,11 +112,20 @@ void SearchList::slot_item_clicked(QListWidgetItem *item) {
         return;
     }
     if (itemType == ListItemType::ADD_USER_TIP_ITEM) {
-        // @todo
-        _find_dlg = std::make_shared<FindSuccessDlg>(this);
-        auto si = std::make_shared<SearchInfo>(0, "lyy", "lyy", "hello, my friend!", 0);
-        std::dynamic_pointer_cast<FindSuccessDlg>(_find_dlg)->SetSearchInfo(si);
-        _find_dlg->show();
+        // 如果正在处于发送状态，则直接返回
+        if (_send_pending) {
+            return;
+        }
+        waitPending(true);
+        auto search_edit = dynamic_cast<CustomizeEdit *>(_search_edit);
+        auto uid_str = search_edit->text();
+        QJsonObject json;
+        json["uid"] = uid_str;
+        QJsonDocument doc(json);
+        QByteArray data = doc.toJson(QJsonDocument::Compact);
+        emit TcpManager::GetInstance()->signal_send_data(RequestId::ID_SEARCH_USER_REQ, data);
+
+
         return;
     }
     // 清除弹出框
@@ -112,4 +133,11 @@ void SearchList::slot_item_clicked(QListWidgetItem *item) {
 }
 
 void SearchList::slot_user_search(std::shared_ptr<SearchInfo> si) {
+    waitPending(false);
+    if (si == nullptr) {
+
+    } else {
+
+    }
+    _find_dlg->show();
 }

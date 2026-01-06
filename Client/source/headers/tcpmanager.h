@@ -47,7 +47,7 @@ signals:
     void signal_switch_chatdlg();                               // 切换到聊天界面
     void signal_login_failed(int);                              // 登录失败
     void signal_con_success(bool b_success);                    // 连接成功
-    void signal_send_data(RequestId id, QString data);          // 发送信息
+    void signal_send_data(RequestId id, QByteArray data);       // 发送信息
     void signal_user_search(std::shared_ptr<SearchInfo>);       // 按下确认搜索按钮
     void signal_friend_apply(std::shared_ptr<AddFriendApply>);
     void signal_add_auth_friend(std::shared_ptr<AuthInfo>);
@@ -55,7 +55,7 @@ signals:
 public slots:
 
     void slot_tcp_connect(ServerInfo);                          // 建立 TCP 连接
-    void slot_send_data(RequestId id, QString data);            // 发送信息
+    void slot_send_data(RequestId id, QByteArray data);         // 发送信息
 };
 
 

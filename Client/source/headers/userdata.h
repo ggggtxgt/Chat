@@ -9,7 +9,7 @@
 
 class SearchInfo {
 public:
-    SearchInfo(int uid, QString name, QString nick, QString desc, int sex); // 构造函数
+    SearchInfo(int uid, QString name, QString nick, QString desc, int sex, QString icon); // 构造函数
     ~SearchInfo();                                                          // 析构函数
 
     int _uid;

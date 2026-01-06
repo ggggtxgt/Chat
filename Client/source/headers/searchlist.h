@@ -26,7 +26,7 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
-    void waitPending(bool pending = true);
+    void waitPending(bool pending = true);                                          // 等待发送完毕
 
     bool _send_pending;
 
