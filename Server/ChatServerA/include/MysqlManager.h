@@ -18,6 +18,7 @@ public:
     std::shared_ptr<UserInfo> GetUserByUid(int uid);                                     // 调用 MySQLDao 根据 uid 查询用户信息
     std::shared_ptr<UserInfo> GetUser(int uid);
     std::shared_ptr<UserInfo> GetUser(std::string name);
+    bool AddFriendApply(const int& from, const int& to);
 
 private:
     MysqlManager();

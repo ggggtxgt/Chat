@@ -59,6 +59,7 @@ public:
     std::shared_ptr<UserInfo> GetUserByUid(int uid);                                // 根据 uid 获取用户信息
     std::shared_ptr<UserInfo> GetUser(int uid);
     std::shared_ptr<UserInfo> GetUser(std::string name);
+    bool AddFriendApply(const int& from, const int& to);
 
 private:
     std::unique_ptr<MysqlConnPool> conpool_;

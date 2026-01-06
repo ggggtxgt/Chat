@@ -34,6 +34,7 @@ private:
     bool isPureDigit(const std::string& str);
     void GetUserByUid(std::string uid_str, Json::Value& rtvalue);
     void GetUserByName(std::string name, Json::Value& rtvalue);
+    void AddFriendApply(std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data);
 
 private:
     bool _b_stop;
