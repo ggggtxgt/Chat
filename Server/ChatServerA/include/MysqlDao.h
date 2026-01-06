@@ -57,6 +57,8 @@ public:
     int GetUserIdByName(const std::string &name);                                   // 根据姓名查询 uid
     bool CheckPwd(const std::string &, const std::string &, UserInfo &);            // 判断密码是否正确
     std::shared_ptr<UserInfo> GetUserByUid(int uid);                                // 根据 uid 获取用户信息
+    std::shared_ptr<UserInfo> GetUser(int uid);
+    std::shared_ptr<UserInfo> GetUser(std::string name);
 
 private:
     std::unique_ptr<MysqlConnPool> conpool_;

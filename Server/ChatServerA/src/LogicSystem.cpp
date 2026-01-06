@@ -68,6 +68,8 @@ void LogicSystem::DealMsg() {
 void LogicSystem::RegisterCallBacks() {
     _func_callbacks[MSG_CHAT_LOGIN] = std::bind(&LogicSystem::LoginHandler, this,
                                                 std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    _func_callbacks[ID_SEARCH_USER_REQ] = std::bind(&LogicSystem::SearchInfo, this,
+                                                   std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 }
 
 void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short &msg_id, const std::string &msg_data) {
@@ -181,4 +183,165 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
         RedisManager::GetInstance()->Set(base_key, redis_root.toStyledString());
     }
     return true;
+}
+
+void LogicSystem::GetUserByName(std::string name, Json::Value &rtvalue) {
+    rtvalue["error"] = ErrorCodes::Success;
+
+    std::string base_key = NAME_INFO + name;
+
+    // 优先通过 redis 查询用户信息
+    std::string info_str = "";
+    bool b_base = RedisManager::GetInstance()->Get(base_key, info_str);
+    if (b_base) {
+        Json::Reader reader;
+        Json::Value root;
+        reader.parse(info_str, root);
+        auto uid = root["uid"].asInt();
+        auto name = root["name"].asString();
+        auto pwd = root["pwd"].asString();
+        auto email = root["email"].asString();
+//        auto nick = root["nick"].asString();
+//        auto desc = root["desc"].asString();
+//        auto sex = root["sex"].asInt();
+        LOG(INFO) << "user  uid is  " << uid << " name  is "
+                  << name << " pwd is " << pwd << " email is " << email;;
+
+        rtvalue["uid"] = uid;
+        rtvalue["pwd"] = pwd;
+        rtvalue["name"] = name;
+        rtvalue["email"] = email;
+//        rtvalue["nick"] = nick;
+//        rtvalue["desc"] = desc;
+//        rtvalue["sex"] = sex;
+        return;
+    }
+
+    // redis 之中没有，则查询 mysql 数据库
+    std::shared_ptr<UserInfo> user_info = nullptr;
+    user_info = MysqlManager::GetInstance()->GetUser(name);
+    if (user_info == nullptr) {
+        rtvalue["error"] = ErrorCodes::UidInvalid;
+        return;
+    }
+
+    // 将数据写入 redis
+    Json::Value redis_root;
+    redis_root["uid"] = user_info->uid;
+    redis_root["pwd"] = user_info->pwd;
+    redis_root["name"] = user_info->name;
+    redis_root["email"] = user_info->email;
+//    redis_root["nick"] = user_info->nick;
+//    redis_root["desc"] = user_info->desc;
+//    redis_root["sex"] = user_info->sex;
+
+    RedisManager::GetInstance()->Set(base_key, redis_root.toStyledString());
+
+    // 返回数据
+    rtvalue["uid"] = user_info->uid;
+    rtvalue["pwd"] = user_info->pwd;
+    rtvalue["name"] = user_info->name;
+    rtvalue["email"] = user_info->email;
+//    rtvalue["nick"] = user_info->nick;
+//    rtvalue["desc"] = user_info->desc;
+//    rtvalue["sex"] = user_info->sex;
+}
+
+
+void LogicSystem::SearchInfo(std::shared_ptr<CSession> session, const short &msg_id, const std::string &msg_data) {
+    Json::Reader reader;
+    Json::Value root;
+    reader.parse(msg_data, root);
+    auto uid_str = root["uid"].asString();
+    LOG(INFO) << "user SearchInfo uid is  " << uid_str;;
+
+    Json::Value rtvalue;
+
+    Defer defer([this, &rtvalue, session]() {
+        std::string return_str = rtvalue.toStyledString();
+        session->Send(return_str, ID_SEARCH_USER_RSP);
+    });
+
+    bool b_digit = isPureDigit(uid_str);
+    if (b_digit) {
+        GetUserByUid(uid_str, rtvalue);
+    } else {
+        GetUserByName(uid_str, rtvalue);
+    }
+    return;
+}
+
+bool LogicSystem::isPureDigit(const std::string &str) {
+    for (char c: str) {
+        if (!std::isdigit(c)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void LogicSystem::GetUserByUid(std::string uid_str, Json::Value &rtvalue) {
+    rtvalue["error"] = ErrorCodes::Success;
+
+    std::string base_key = USER_BASE_INFO + uid_str;
+
+    // 优先通过 redis 查询用户信息
+    std::string info_str = "";
+    bool b_base = RedisManager::GetInstance()->Get(base_key, info_str);
+    if (b_base) {
+        Json::Reader reader;
+        Json::Value root;
+        reader.parse(info_str, root);
+        auto uid = root["uid"].asInt();
+        auto name = root["name"].asString();
+        auto pwd = root["pwd"].asString();
+        auto email = root["email"].asString();
+//        auto nick = root["nick"].asString();
+//        auto desc = root["desc"].asString();
+//        auto sex = root["sex"].asInt();
+//        auto icon = root["icon"].asString();
+        //LOG(INFO) << "user  uid is  " << uid << " name  is "<< name << " pwd is " << pwd << " email is " << email << " icon is " << icon;;
+
+        rtvalue["uid"] = uid;
+        rtvalue["pwd"] = pwd;
+        rtvalue["name"] = name;
+        rtvalue["email"] = email;
+//        rtvalue["nick"] = nick;
+//        rtvalue["desc"] = desc;
+//        rtvalue["sex"] = sex;
+//        rtvalue["icon"] = icon;
+        return;
+    }
+
+    auto uid = std::stoi(uid_str);
+    // redis 之中不存在，则查询 mysql 数据库
+    std::shared_ptr<UserInfo> user_info = nullptr;
+    user_info = MysqlManager::GetInstance()->GetUser(uid);
+    if (user_info == nullptr) {
+        rtvalue["error"] = ErrorCodes::UidInvalid;
+        return;
+    }
+
+    // 将数据库内容写入 redis 缓存
+    Json::Value redis_root;
+    redis_root["uid"] = user_info->uid;
+    redis_root["pwd"] = user_info->pwd;
+    redis_root["name"] = user_info->name;
+    redis_root["email"] = user_info->email;
+//    redis_root["nick"] = user_info->nick;
+//    redis_root["desc"] = user_info->desc;
+//    redis_root["sex"] = user_info->sex;
+//    redis_root["icon"] = user_info->icon;
+
+    RedisManager::GetInstance()->Set(base_key, redis_root.toStyledString());
+
+    // 返回数据
+    rtvalue["uid"] = user_info->uid;
+    rtvalue["pwd"] = user_info->pwd;
+    rtvalue["name"] = user_info->name;
+    rtvalue["email"] = user_info->email;
+//    rtvalue["nick"] = user_info->nick;
+//    rtvalue["desc"] = user_info->desc;
+//    rtvalue["sex"] = user_info->sex;
+//    rtvalue["icon"] = user_info->icon;
 }

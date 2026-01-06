@@ -16,6 +16,8 @@ public:
     bool CheckPwd(const std::string &email, const std::string &pwd, UserInfo &userInfo); // 调用 MySQLDao 判断密码是否正确
     int GetUserIdByName(const std::string &);                                            // 调用 MySQLDao 根据姓名查询 uid
     std::shared_ptr<UserInfo> GetUserByUid(int uid);                                     // 调用 MySQLDao 根据 uid 查询用户信息
+    std::shared_ptr<UserInfo> GetUser(int uid);
+    std::shared_ptr<UserInfo> GetUser(std::string name);
 
 private:
     MysqlManager();

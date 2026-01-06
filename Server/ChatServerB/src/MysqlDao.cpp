@@ -55,7 +55,7 @@ void MysqlConnPool::CheckConnection() {
             stmt->executeQuery("SELECT 1");
 
             con->_last_time = timestamp;
-            // LOG(INFO) << "execute timer alive query, cur is " << timestamp;
+            LOG(INFO) << "execute timer alive query, cur is " << timestamp;
         }
         catch (sql::SQLException &exception) {
             LOG(ERROR) << "Error keeping connection alive: " << exception.what();
@@ -180,7 +180,7 @@ bool MysqlDao::CheckEmail(const std::string &name, const std::string &email) {
 
         // 遍历结果集
         while (res->next()) {
-            std::cout << "Check Email: " << res->getString("email") << std::endl;
+            std::cout << "Check Email: " << res->getString("email");
             if (email != res->getString("email")) {
                 conpool_->ReturnConnection(std::move(con));
                 return false;
@@ -191,9 +191,9 @@ bool MysqlDao::CheckEmail(const std::string &name, const std::string &email) {
     }
     catch (sql::SQLException &e) {
         conpool_->ReturnConnection(std::move(con));
-        std::cerr << "SQLException: " << e.what();
-        std::cerr << " (MySQL error code: " << e.getErrorCode();
-        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        LOG(ERROR) << "SQLException: " << e.what();
+        LOG(ERROR) << " (MySQL error code: " << e.getErrorCode();
+        LOG(ERROR) << ", SQLState: " << e.getSQLState() << " )";
         return false;
     }
 }
@@ -217,15 +217,15 @@ bool MysqlDao::UpdatePwd(const std::string &name, const std::string &newpwd) {
         // 执行更新
         int updateCount = pstmt->executeUpdate();
 
-        std::cout << "Updated rows: " << updateCount << std::endl;
+        std::cout << "Updated rows: " << updateCount;
         conpool_->ReturnConnection(std::move(con));
         return true;
     }
     catch (sql::SQLException &e) {
         conpool_->ReturnConnection(std::move(con));
-        std::cerr << "SQLException: " << e.what();
-        std::cerr << " (MySQL error code: " << e.getErrorCode();
-        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        LOG(ERROR) << "SQLException: " << e.what();
+        LOG(ERROR) << " (MySQL error code: " << e.getErrorCode();
+        LOG(ERROR) << ", SQLState: " << e.getSQLState() << " )";
         return false;
     }
 }
@@ -281,7 +281,7 @@ bool MysqlDao::CheckPwd(const std::string &email, const std::string &pwd, UserIn
         while (res->next()) {
             origin_pwd = res->getString("pwd");
             // 输出查询得到的密码
-            std::cout << "Password: " << origin_pwd << std::endl;
+            std::cout << "Password: " << origin_pwd;
             break;
         }
 
@@ -294,9 +294,9 @@ bool MysqlDao::CheckPwd(const std::string &email, const std::string &pwd, UserIn
         return true;
     }
     catch (sql::SQLException &e) {
-        std::cerr << "SQLException: " << e.what();
-        std::cerr << " (MySQL error code: " << e.getErrorCode();
-        std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+        LOG(ERROR) << "SQLException: " << e.what();
+        LOG(ERROR) << " (MySQL error code: " << e.getErrorCode();
+        LOG(ERROR) << ", SQLState: " << e.getSQLState() << " )";
         return false;
     }
 }
@@ -334,6 +334,87 @@ std::shared_ptr<UserInfo> MysqlDao::GetUserByUid(int uid) {
         LOG(ERROR) << "SQLException: " << e.what();
         LOG(ERROR) << "MySQL error code: " << e.getErrorCode();
         LOG(ERROR) << "SQLState: " << e.getSQLState();
+        return nullptr;
+    }
+}
+
+std::shared_ptr<UserInfo> MysqlDao::GetUser(std::string name) {
+    auto con = conpool_->GetConnection();
+    if (con == nullptr) {
+        return nullptr;
+    }
+
+    Defer defer([this, &con]() {
+        conpool_->ReturnConnection(std::move(con));
+    });
+
+    try {
+        // 准备 SQL 语句
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->_con->prepareStatement("SELECT * FROM user WHERE name = ?"));
+        pstmt->setString(1, name); // 将 uid 替换为需要查询的 uid
+
+        // ִ执行查询
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        std::shared_ptr<UserInfo> user_ptr = nullptr;
+        // 遍历结果集
+        while (res->next()) {
+            user_ptr.reset(new UserInfo);
+            user_ptr->pwd = res->getString("pwd");
+            user_ptr->email = res->getString("email");
+            user_ptr->name = res->getString("name");
+//            user_ptr->nick = res->getString("nick");
+//            user_ptr->desc = res->getString("desc");
+//            user_ptr->sex = res->getInt("sex");
+            user_ptr->uid = res->getInt("uid");
+            break;
+        }
+        return user_ptr;
+    }
+    catch (sql::SQLException &e) {
+        LOG(ERROR) << "SQLException: " << e.what();
+        LOG(ERROR) << " (MySQL error code: " << e.getErrorCode();
+        LOG(ERROR) << ", SQLState: " << e.getSQLState() << " )";
+        return nullptr;
+    }
+}
+
+std::shared_ptr<UserInfo> MysqlDao::GetUser(int uid) {
+    auto con = conpool_->GetConnection();
+    if (con == nullptr) {
+        return nullptr;
+    }
+
+    Defer defer([this, &con]() {
+        conpool_->ReturnConnection(std::move(con));
+    });
+
+    try {
+        // 准备 SQL 语句
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->_con->prepareStatement("SELECT * FROM user WHERE uid = ?"));
+        pstmt->setInt(1, uid); // 将 uid 替换为需要查找的 uid
+
+        // ִ执行查询
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        std::shared_ptr<UserInfo> user_ptr = nullptr;
+        // 遍历结果集
+        while (res->next()) {
+            user_ptr.reset(new UserInfo);
+            user_ptr->pwd = res->getString("pwd");
+            user_ptr->email = res->getString("email");
+            user_ptr->name = res->getString("name");
+//            user_ptr->nick = res->getString("nick");
+//            user_ptr->desc = res->getString("desc");
+//            user_ptr->sex = res->getInt("sex");
+//            user_ptr->icon = res->getString("icon");
+            user_ptr->uid = uid;
+            break;
+        }
+        return user_ptr;
+    }
+    catch (sql::SQLException &e) {
+        LOG(ERROR) << "SQLException: " << e.what();
+        LOG(ERROR) << " (MySQL error code: " << e.getErrorCode();
+        LOG(ERROR) << ", SQLState: " << e.getSQLState() << " )";
         return nullptr;
     }
 }

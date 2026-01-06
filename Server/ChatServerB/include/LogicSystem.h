@@ -30,6 +30,10 @@ private:
     void LoginHandler(std::shared_ptr<CSession>,
                       const short &, const std::string &);          //
     bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo> &userinfo);
+    void SearchInfo(std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data);
+    bool isPureDigit(const std::string& str);
+    void GetUserByUid(std::string uid_str, Json::Value& rtvalue);
+    void GetUserByName(std::string name, Json::Value& rtvalue);
 
 private:
     bool _b_stop;
