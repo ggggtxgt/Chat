@@ -1,3 +1,5 @@
+#include <QJsonArray>
+
 #include "usermanager.h"
 
 UserManager::UserManager() {}
@@ -70,4 +72,23 @@ bool UserManager::AlreadyApply(int uid) {
         }
     }
     return false;
+}
+
+void UserManager::SetUserInfo(std::shared_ptr<UserInfo> user_info) {
+    _user_info = user_info;
+}
+
+void UserManager::AppendApplyList(QJsonArray array) {
+    // 遍历 QJsonArray 并输出每个元素
+    for (const QJsonValue &value: array) {
+        auto name = value["name"].toString();
+        auto desc = value["desc"].toString();
+        auto icon = value["icon"].toString();
+        auto nick = value["nick"].toString();
+        auto sex = value["sex"].toInt();
+        auto uid = value["uid"].toInt();
+        auto status = value["status"].toInt();
+        auto info = std::make_shared<ApplyInfo>(uid, name, desc, icon, nick, sex, status);
+        _apply_list.push_back(info);
+    }
 }

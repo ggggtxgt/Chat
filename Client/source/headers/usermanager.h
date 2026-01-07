@@ -35,6 +35,8 @@ public:
     std::vector<std::shared_ptr<ApplyInfo>> GetApplyList();
     void AddApplyList(std::shared_ptr<ApplyInfo> app);
     bool AlreadyApply(int uid);
+    void SetUserInfo(std::shared_ptr<UserInfo> user_info);
+    void AppendApplyList(QJsonArray array);
 
 private:
     UserManager();
@@ -44,6 +46,7 @@ private:
     QString _token;
     int _chat_loaded;
     int _contact_loaded;
+    std::shared_ptr<UserInfo> _user_info;
     std::vector<std::shared_ptr<FriendInfo>> _friend_list;
     std::vector<std::shared_ptr<ApplyInfo>> _apply_list;
 };

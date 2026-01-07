@@ -1,6 +1,7 @@
-#include "applyfriend.h"
 #include "tcpmanager.h"
+#include "applyfriend.h"
 #include "usermanager.h"
+#include "authenfriend.h"
 #include "applyfriendpage.h"
 #include "applyfrienditem.h"
 #include "../forms/ui_applyfriendpage.h"
@@ -41,10 +42,10 @@ void ApplyFriendPage::AddNewApply(std::shared_ptr<AddFriendApply> apply) {
     _unauth_items[apply->_from_uid] = apply_item;
     // 收到审核好友信号
     connect(apply_item, &ApplyFriendItem::sig_auth_friend, [this](std::shared_ptr<ApplyInfo> apply_info) {
-//        auto *authFriend = new AuthenFriend(this);
-//        authFriend->setModal(true);
-//        authFriend->SetApplyInfo(apply_info);
-//        authFriend->show();
+        auto *authFriend = new AuthenFriend(this);
+        authFriend->setModal(true);
+        authFriend->SetApplyInfo(apply_info);
+        authFriend->show();
     });
 }
 
@@ -80,10 +81,10 @@ void ApplyFriendPage::loadApplyList() {
 
         // 收到审核好友信号
         connect(apply_item, &ApplyFriendItem::sig_auth_friend, [this](std::shared_ptr<ApplyInfo> apply_info) {
-//            auto *authFriend = new AuthenFriend(this);
-//            authFriend->setModal(true);
-//            authFriend->SetApplyInfo(apply_info);
-//            authFriend->show();
+            auto *authFriend = new AuthenFriend(this);
+            authFriend->setModal(true);
+            authFriend->SetApplyInfo(apply_info);
+            authFriend->show();
         });
     }
 
@@ -106,10 +107,10 @@ void ApplyFriendPage::loadApplyList() {
         ui->apply_friend_list->setItemWidget(item, apply_item);
         // 收到审核好友信号
         connect(apply_item, &ApplyFriendItem::sig_auth_friend, [this](std::shared_ptr<ApplyInfo> apply_info) {
-//            auto *authFriend = new AuthenFriend(this);
-//            authFriend->setModal(true);
-//            authFriend->SetApplyInfo(apply_info);
-//            authFriend->show();
+            auto *authFriend = new AuthenFriend(this);
+            authFriend->setModal(true);
+            authFriend->SetApplyInfo(apply_info);
+            authFriend->show();
         });
     }
 }
