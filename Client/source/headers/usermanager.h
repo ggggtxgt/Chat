@@ -37,6 +37,10 @@ public:
     bool AlreadyApply(int uid);
     void SetUserInfo(std::shared_ptr<UserInfo> user_info);
     void AppendApplyList(QJsonArray array);
+    bool CheckFriendById(int uid);
+    void AddFriend(std::shared_ptr<AuthRsp> auth_rsp);
+    void AddFriend(std::shared_ptr<AuthInfo> auth_info);
+    std::shared_ptr<FriendInfo> GetFriendById(int uid);
 
 private:
     UserManager();
@@ -47,6 +51,7 @@ private:
     int _chat_loaded;
     int _contact_loaded;
     std::shared_ptr<UserInfo> _user_info;
+    QMap<int, std::shared_ptr<FriendInfo>> _friend_map;
     std::vector<std::shared_ptr<FriendInfo>> _friend_list;
     std::vector<std::shared_ptr<ApplyInfo>> _apply_list;
 };

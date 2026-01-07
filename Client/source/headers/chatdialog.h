@@ -9,6 +9,7 @@
 #define CLIENT_CHATDIALOG_H
 
 #include <QDialog>
+#include <QListWidgetItem>
 
 #include "global.h"
 #include "userdata.h"
@@ -36,6 +37,7 @@ private:
     ChatUIMode _state;
     bool _b_loading;
     QList<StateWidget *> _lb_list;
+    QMap<int, QListWidgetItem*> _chat_items_added;
 
 private:
     void showSearch(bool b_search = false);                                 // 显示各种列表
@@ -47,6 +49,8 @@ private slots:
     void slot_side_chat();                                                  // 侧边栏聊天图标
     void slot_side_contact();                                               // 侧边栏联系图标
     void slot_text_changed(const QString &str);                             //
+    void slot_add_auth_friend(std::shared_ptr<AuthInfo> auth_info);
+    void slot_auth_rsp(std::shared_ptr<AuthRsp> auth_rsp);
 
 public slots:
     void slot_apply_friend(std::shared_ptr<AddFriendApply> apply);

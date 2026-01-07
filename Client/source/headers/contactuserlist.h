@@ -29,8 +29,8 @@ public slots:
 
     void slot_item_clicked(QListWidgetItem *item);
 
-//    void slot_add_auth_firend(std::shared_ptr<AuthInfo>);
-//    void slot_auth_rsp(std::shared_ptr<AuthRsp>);
+    void slot_add_auth_firend(std::shared_ptr<AuthInfo>);
+    void slot_auth_rsp(std::shared_ptr<AuthRsp>);
 
 signals:
 
