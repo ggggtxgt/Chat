@@ -73,6 +73,8 @@ void LogicSystem::RegisterCallBacks() {
                                                     std::placeholders::_2, std::placeholders::_3);
     _func_callbacks[ID_ADD_FRIEND_REQ] = std::bind(&LogicSystem::AddFriendApply, this, std::placeholders::_1,
                                                    std::placeholders::_2, std::placeholders::_3);
+    _func_callbacks[ID_AUTH_FRIEND_REQ] = std::bind(&LogicSystem::AuthFriendApply, this, std::placeholders::_1,
+                                                    std::placeholders::_2, std::placeholders::_3);
 }
 
 void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short &msg_id, const std::string &msg_data) {
@@ -168,6 +170,7 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
     // 优先通过 redis 查询用户信息
     std::string info_str = "";
     bool b_base = RedisManager::GetInstance()->Get(base_key, info_str);
+    /*
     if (b_base) {
         Json::Reader reader;
         Json::Value root;
@@ -182,7 +185,7 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
         userinfo->icon = root["icon"].asString();
         LOG(INFO) << "user login uid is  " << userinfo->uid << " name  is "
                   << userinfo->name << " pwd is " << userinfo->pwd << " email is " << userinfo->email;
-    } else {
+    } else */{
         //　redis 之中没有，则查询 mysql
         std::shared_ptr<UserInfo> user_info = nullptr;
         user_info = MysqlManager::GetInstance()->GetUserByUid(uid);
@@ -433,3 +436,79 @@ void LogicSystem::AddFriendApply(std::shared_ptr<CSession> session, const short 
 bool LogicSystem::GetFriendApplyInfo(int to_uid, std::vector<std::shared_ptr<ApplyInfo>> &list) {
     return MysqlManager::GetInstance()->GetApplyList(to_uid, list, 0, 10);
 }
+
+void LogicSystem::AuthFriendApply(std::shared_ptr<CSession> session, const short &msg_id, const std::string &msg_data) {
+    Json::Reader reader;
+    Json::Value root;
+    reader.parse(msg_data, root);
+
+    auto uid = root["fromuid"].asInt();
+    auto touid = root["touid"].asInt();
+    auto back_name = root["back"].asString();
+    std::cout << "from " << uid << " auth friend to " << touid << std::endl;
+
+    Json::Value rtvalue;
+    rtvalue["error"] = ErrorCodes::Success;
+    auto user_info = std::make_shared<UserInfo>();
+
+    std::string base_key = USER_BASE_INFO + std::to_string(touid);
+    bool b_info = GetBaseInfo(base_key, touid, user_info);
+    if (b_info) {
+        rtvalue["name"] = user_info->name;
+        rtvalue["nick"] = user_info->nick;
+        rtvalue["icon"] = user_info->icon;
+        rtvalue["sex"] = user_info->sex;
+        rtvalue["uid"] = touid;
+    } else {
+        rtvalue["error"] = ErrorCodes::UidInvalid;
+    }
+    Defer defer([this, &rtvalue, session]() {
+        std::string return_str = rtvalue.toStyledString();
+        session->Send(return_str, ID_AUTH_FRIEND_RSP);
+    });
+    //�ȸ������ݿ�
+    MysqlManager::GetInstance()->AuthFriendApply(uid, touid);
+    //�������ݿ����Ӻ���
+    MysqlManager::GetInstance()->AddFriend(uid, touid, back_name);
+    //��ѯredis ����touid��Ӧ��server ip
+    auto to_str = std::to_string(touid);
+    auto to_ip_key = USERIPPREFIX + to_str;
+    std::string to_ip_value = "";
+    bool b_ip = RedisManager::GetInstance()->Get(to_ip_key, to_ip_value);
+    if (!b_ip) {
+        return;
+    }
+    auto &cfg = ConfigManager::Inst();
+    auto self_name = cfg["SelfServer"]["Name"];
+    //ֱ��֪ͨ�Է�����֤ͨ����Ϣ
+    if (to_ip_value == self_name) {
+        auto session = UserManager::GetInstance()->GetSession(touid);
+        if (session) {
+            //���ڴ�����ֱ�ӷ���֪ͨ�Է�
+            Json::Value notify;
+            notify["error"] = ErrorCodes::Success;
+            notify["fromuid"] = uid;
+            notify["touid"] = touid;
+            std::string base_key = USER_BASE_INFO + std::to_string(uid);
+            auto user_info = std::make_shared<UserInfo>();
+            bool b_info = GetBaseInfo(base_key, uid, user_info);
+            if (b_info) {
+                notify["name"] = user_info->name;
+                notify["nick"] = user_info->nick;
+                notify["icon"] = user_info->icon;
+                notify["sex"] = user_info->sex;
+            } else {
+                notify["error"] = ErrorCodes::UidInvalid;
+            }
+            std::string return_str = notify.toStyledString();
+            session->Send(return_str, ID_NOTIFY_AUTH_FRIEND_REQ);
+        }
+        return;
+    }
+    AuthFriendReq auth_req;
+    auth_req.set_fromuid(uid);
+    auth_req.set_touid(touid);
+    //����֪ͨ
+    ChatGrpcClient::GetInstance()->NotifyAuthFriend(to_ip_value, auth_req);
+}
+

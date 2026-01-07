@@ -402,10 +402,10 @@ std::shared_ptr<UserInfo> MysqlDao::GetUser(int uid) {
             user_ptr->pwd = res->getString("pwd");
             user_ptr->email = res->getString("email");
             user_ptr->name = res->getString("name");
-//            user_ptr->nick = res->getString("nick");
-//            user_ptr->desc = res->getString("desc");
-//            user_ptr->sex = res->getInt("sex");
-//            user_ptr->icon = res->getString("icon");
+            user_ptr->nick = res->getString("nick");
+            user_ptr->desc = res->getString("desc");
+            user_ptr->sex = res->getInt("sex");
+            user_ptr->icon = res->getString("icon");
             user_ptr->uid = uid;
             break;
         }
@@ -494,3 +494,96 @@ bool MysqlDao::GetApplyList(int touid, std::vector<std::shared_ptr<ApplyInfo>> &
         return false;
     }
 }
+
+bool MysqlDao::AddFriend(const int &from, const int &to, std::string back_name) {
+    auto con = conpool_->GetConnection();
+    if (con == nullptr) {
+        return false;
+    }
+    Defer defer([this, &con]() {
+        conpool_->ReturnConnection(std::move(con));
+    });
+    try {
+        // 开始事务
+        con->_con->setAutoCommit(false);
+
+        // 准备 SQL 语句，插入认证方好友数据
+        std::unique_ptr<sql::PreparedStatement> pstmt(
+                con->_con->prepareStatement("INSERT IGNORE INTO friend(self_id, friend_id, back) "
+                                            "VALUES (?, ?, ?) "
+                ));
+        // 通过 from 验证 to
+        pstmt->setInt(1, from); // from id
+        pstmt->setInt(2, to);
+        pstmt->setString(3, back_name);
+        // 执行更新
+        int rowAffected = pstmt->executeUpdate();
+        if (rowAffected < 0) {
+            con->_con->rollback();
+            return false;
+        }
+
+        std::unique_ptr<sql::PreparedStatement> pstmt2(
+                con->_con->prepareStatement("INSERT IGNORE INTO friend(self_id, friend_id, back) "
+                                            "VALUES (?, ?, ?) "
+                ));
+
+        pstmt2->setInt(1, to); // from id
+        pstmt2->setInt(2, from);
+        pstmt2->setString(3, "");
+
+        int rowAffected2 = pstmt2->executeUpdate();
+        if (rowAffected2 < 0) {
+            con->_con->rollback();
+            return false;
+        }
+
+        con->_con->commit();
+        std::cout << "addfriend insert friends success";
+
+        return true;
+    }
+    catch (sql::SQLException &e) {
+        // ����������󣬻ع�����
+        if (con) {
+            con->_con->rollback();
+        }
+        LOG(ERROR) << "SQLException: " << e.what();
+        LOG(ERROR) << " (MySQL error code: " << e.getErrorCode();
+        LOG(ERROR) << ", SQLState: " << e.getSQLState() << " )";
+        return false;
+    }
+    return true;
+}
+
+bool MysqlDao::AuthFriendApply(const int &from, const int &to) {
+    auto con = conpool_->GetConnection();
+    if (con == nullptr) {
+        return false;
+    }
+    Defer defer([this, &con]() {
+        conpool_->ReturnConnection(std::move(con));
+    });
+    try {
+        // 准备 SQL 语句
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->_con->prepareStatement("UPDATE friend_apply SET status = 1 "
+                                                                                  "WHERE from_uid = ? AND to_uid = ?"));
+        // 通过 from 验证 to
+        pstmt->setInt(1, to); // from id
+        pstmt->setInt(2, from);
+        // ִ执行更新
+        int rowAffected = pstmt->executeUpdate();
+        if (rowAffected < 0) {
+            return false;
+        }
+        return true;
+    }
+    catch (sql::SQLException &e) {
+        LOG(ERROR) << "SQLException: " << e.what();
+        LOG(ERROR) << " (MySQL error code: " << e.getErrorCode();
+        LOG(ERROR) << ", SQLState: " << e.getSQLState() << " )";
+        return false;
+    }
+    return true;
+}
+
