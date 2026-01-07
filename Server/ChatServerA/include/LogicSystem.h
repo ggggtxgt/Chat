@@ -35,6 +35,7 @@ private:
     void GetUserByUid(std::string uid_str, Json::Value& rtvalue);
     void GetUserByName(std::string name, Json::Value& rtvalue);
     void AddFriendApply(std::shared_ptr<CSession> session, const short& msg_id, const std::string& msg_data);
+    bool GetFriendApplyInfo(int to_uid, std::vector<std::shared_ptr<ApplyInfo>>& list);
 
 private:
     bool _b_stop;

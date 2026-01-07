@@ -72,7 +72,7 @@ void LogicSystem::RegisterCallBacks() {
     _func_callbacks[ID_SEARCH_USER_REQ] = std::bind(&LogicSystem::SearchInfo, this, std::placeholders::_1,
                                                     std::placeholders::_2, std::placeholders::_3);
     _func_callbacks[ID_ADD_FRIEND_REQ] = std::bind(&LogicSystem::AddFriendApply, this, std::placeholders::_1,
-                                                    std::placeholders::_2, std::placeholders::_3);
+                                                   std::placeholders::_2, std::placeholders::_3);
 }
 
 void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short &msg_id, const std::string &msg_data) {
@@ -120,6 +120,23 @@ void LogicSystem::LoginHandler(std::shared_ptr<CSession> session, const short &m
     rtvalue["desc"] = user_info->desc;
     rtvalue["sex"] = user_info->sex;
     rtvalue["icon"] = user_info->icon;
+
+    // 从数据库获取好友申请列表
+    std::vector<std::shared_ptr<ApplyInfo>> apply_list;
+    auto b_apply = GetFriendApplyInfo(uid, apply_list);
+    if (b_apply) {
+        for (auto &apply: apply_list) {
+            Json::Value obj;
+            obj["name"] = apply->_name;
+            obj["uid"] = apply->_uid;
+            obj["icon"] = apply->_icon;
+            obj["nick"] = apply->_nick;
+            obj["sex"] = apply->_sex;
+            obj["desc"] = apply->_desc;
+            obj["status"] = apply->_status;
+            rtvalue["apply_list"].append(obj);
+        }
+    }
 
     // 从数据库获取好友列表
     auto server_name = ConfigManager::Inst().GetValue("SelfServer", "Name");
@@ -411,4 +428,8 @@ void LogicSystem::AddFriendApply(std::shared_ptr<CSession> session, const short 
     }
     // 发送通知
     ChatGrpcClient::GetInstance()->NotifyAddFriend(to_ip_value, add_req);
+}
+
+bool LogicSystem::GetFriendApplyInfo(int to_uid, std::vector<std::shared_ptr<ApplyInfo>> &list) {
+    return MysqlManager::GetInstance()->GetApplyList(to_uid, list, 0, 10);
 }
