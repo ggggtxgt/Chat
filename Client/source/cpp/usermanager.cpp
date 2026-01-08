@@ -6,18 +6,14 @@ UserManager::UserManager() {}
 
 UserManager::~UserManager() noexcept {}
 
-void UserManager::SetUid(int uid) { _uid = uid; }
-
-void UserManager::SetName(QString name) { _name = name; }
-
 void UserManager::SetToken(QString token) { _token = token; }
 
 QString UserManager::GetName() {
-    return _name;
+    return _user_info->_name;
 }
 
 int UserManager::GetUid() {
-    return _uid;
+    return _user_info->_uid;
 }
 
 void UserManager::UpdateContactLoadedCount() {

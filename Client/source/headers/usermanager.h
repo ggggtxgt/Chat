@@ -24,8 +24,6 @@ public:
     friend class Singleton<UserManager>;
 
     ~UserManager() override;                                // 析构函数
-    void SetUid(int uid);                                   // 设置 uid
-    void SetName(QString name);                             // 设置名称
     void SetToken(QString token);                           // 设置 token
     int GetUid();                                           // 获取 Uid
     QString GetName();                                      // 获取名称
@@ -45,8 +43,6 @@ public:
 private:
     UserManager();
 
-    int _uid;
-    QString _name;
     QString _token;
     int _chat_loaded;
     int _contact_loaded;

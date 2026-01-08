@@ -125,7 +125,7 @@ void TcpManager::initHandlers() {
 
         UserManager::GetInstance()->SetUserInfo(user_info);
         UserManager::GetInstance()->SetToken(jsonObj["token"].toString());
-        if(jsonObj.contains("apply_list")){
+        if (jsonObj.contains("apply_list")) {
             UserManager::GetInstance()->AppendApplyList(jsonObj["apply_list"].toArray());
         }
         emit signal_switch_chatdlg();
@@ -162,39 +162,6 @@ void TcpManager::initHandlers() {
                                                         jsonObj["nick"].toString(), jsonObj["desc"].toString(),
                                                         jsonObj["sex"].toInt(), jsonObj["icon"].toString());
         emit signal_user_search(search_info);
-    });
-
-    _handlers.insert(ID_CHAT_LOGIN_RSP, [this](RequestId id, int len, QByteArray data) {
-        qDebug() << "handle id is " << id << " data is " << data;
-        // 将QByteArray转换为QJsonDocument
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
-
-        // 检查转换是否成功
-        if (jsonDoc.isNull()) {
-            qDebug() << "Failed to create QJsonDocument.";
-            return;
-        }
-
-        QJsonObject jsonObj = jsonDoc.object();
-
-        if (!jsonObj.contains("error")) {
-            int err = ErrorCodes::ERR_JSON;
-            qDebug() << "Login Failed, err is Json Parse Err" << err;
-            emit signal_login_failed(err);
-            return;
-        }
-
-        int err = jsonObj["error"].toInt();
-        if (err != ErrorCodes::SUCCESS) {
-            qDebug() << "Login Failed, err is " << err;
-            emit signal_login_failed(err);
-            return;
-        }
-
-        UserManager::GetInstance()->SetUid(jsonObj["uid"].toInt());
-        UserManager::GetInstance()->SetName(jsonObj["name"].toString());
-        UserManager::GetInstance()->SetToken(jsonObj["token"].toString());
-        emit signal_switch_chatdlg();
     });
 
     _handlers.insert(ID_ADD_FRIEND_RSP, [this](RequestId id, int len, QByteArray data) {
@@ -288,7 +255,7 @@ void TcpManager::initHandlers() {
         QString nick = jsonObj["nick"].toString();
         QString icon = jsonObj["icon"].toString();
         int sex = jsonObj["sex"].toInt();
-        auto auth_info = std::make_shared<AuthInfo>(from_uid,name,
+        auto auth_info = std::make_shared<AuthInfo>(from_uid, name,
                                                     nick, icon, sex);
         emit signal_add_auth_friend(auth_info);
     });
@@ -321,7 +288,7 @@ void TcpManager::initHandlers() {
         auto uid = jsonObj["uid"].toInt();
         auto rsp = std::make_shared<AuthRsp>(uid, name, nick, icon, sex);
         emit signal_auth_rsp(rsp);
-        qDebug() << "Auth Friend Success " ;
+        qDebug() << "Auth Friend Success ";
     });
 }
 
